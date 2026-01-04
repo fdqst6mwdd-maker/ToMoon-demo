@@ -48,16 +48,20 @@ const sidebarConfig = {
         },
         {
             id: 'journal',
-            label: 'Journal',
+            label: 'Moonlog',
             icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
             type: 'group',
             internalSwitchMap: {
-                'tradeview': 'tradeview',
-                'sessionjournal': 'sessionjournal'
+                'missioncontrol': 'missioncontrol',
+                'tradelog': 'tradelog',
+                'sessionlog': 'sessionlog',
+                'highlights': 'highlights'
             },
             items: [
-                { id: 'tradeview', label: 'TradeLog', href: '../Journal/Journal_demo_v1.2.html?page=tradeview' },
-                { id: 'sessionjournal', label: 'SessionLog', href: '../Journal/Journal_demo_v1.2.html?page=sessionjournal' }
+                { id: 'missioncontrol', label: 'Mission Control', href: '../Moonlog/Moonlog.html?view=missioncontrol' },
+                { id: 'tradelog', label: 'TradeLog', href: '../Moonlog/Moonlog.html?view=tradelog' },
+                { id: 'sessionlog', label: 'SessionLog', href: '../Moonlog/Moonlog.html?view=sessionlog' },
+                { id: 'highlights', label: 'Highlights', href: '../Moonlog/Moonlog.html?view=highlights' }
             ]
         },
         {

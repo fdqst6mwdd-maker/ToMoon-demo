@@ -718,7 +718,7 @@
         /* --- Flip Card Styles --- */
         .bp-card-container {
             perspective: 1000px;
-            height: 340px; /* Fixed height for flip consistency */
+            height: 280px; /* Compact height */
             cursor: pointer;
         }
         
@@ -744,7 +744,7 @@
             border-radius: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 24px;
+            padding: 20px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -789,6 +789,19 @@
         .status-idle { background-color: var(--text-muted); }
         .status-paused { background-color: var(--warning); }
 
+        /* Strategy Guide Banner */
+        .strategy-guide-banner {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(35, 39, 48, 0) 100%);
+            border-left: 3px solid var(--primary);
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -796,6 +809,7 @@
 <!-- Sidebar (由共享模块生成) -->
 <aside class="sidebar" id="sidebar"></aside>
 <script src="../shared/sidebar.js"></script>
+<script src="../shared/topbar.js"></script>
 <script>
     // 自动初始化侧边栏 - Strategy页面启用页面内切换
     const { currentSubItem } = autoInitSidebar({ 
@@ -803,6 +817,9 @@
         switchFunction: 'switchView',
         title: 'Execute Centre'
     });
+    
+    // 初始化 Topbar（包含全局 Quick Journal）
+    initTopbar({ title: 'Execute Centre' });
     
     // 如果URL有参数，在页面加载时切换到对应视图
     document.addEventListener('DOMContentLoaded', function() {
@@ -821,7 +838,8 @@
 <main class="main-content">
 
     <div id="view-dashboard" class="section-view active">
-        <div class="header-row" style="align-items: center; justify-content: flex-end;">
+        <div class="header-row" style="align-items: center; justify-content: space-between;">
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Execute centre. Start sessions and stay within risk.</p>
             <div id="market-clock-widget">
                 <!-- Market Clock Injected by JS -->
             </div>
@@ -852,6 +870,20 @@
         <div class="execute-layout">
             <!-- Left: Session Control (Fixed Width) -->
             <div class="session-panel">
+                <!-- Today's Highlight (Moonlog Integration) -->
+                <div class="card" id="highlight-card" style="padding: 15px; margin-bottom: 15px; border-left: 3px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; color: var(--primary); font-weight: 700; text-transform: uppercase;">Today's Highlight</span>
+                        <div style="display: flex; gap: 5px;">
+                            <span style="font-size: 10px; color: var(--text-muted); cursor: pointer;" onclick="swapHighlight()">Swap ↻</span>
+                            <span style="font-size: 10px; color: var(--success); cursor: pointer;" onclick="markHighlightReviewed()">Reviewed ✓</span>
+                        </div>
+                    </div>
+                    <div id="todays-highlight-text" style="font-size: 13px; line-height: 1.4; color: var(--text-main);">
+                        "Avoid trading the first 5 mins of NQ open when VIX is above 20."
+                    </div>
+                </div>
+
                 <div class="card" style="padding: 20px;">
                     <h3 style="margin-bottom: 15px; font-size: 16px;">New Session</h3>
 
@@ -924,8 +956,24 @@
     </div>
 
     <div id="view-library" class="section-view">
-        <div class="header-row" style="justify-content: flex-end;">
+        <div class="header-row" style="align-items: center; justify-content: space-between;">
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Blueprint library. Create and refine your playbook.</p>
             <button class="btn btn-primary" onclick="openWizard()">+ New Blueprint</button>
+        </div>
+
+        <!-- Strategy Philosophy Banner -->
+        <div class="strategy-guide-banner" id="strategy-banner">
+            <div style="font-size: 20px;">🧭</div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Why create a Blueprint?</div>
+                <div style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                    A Blueprint is not just a setup—it's your <strong>business plan</strong> for a specific market condition. 
+                    By defining your <em>Identity</em>, <em>Risk Rules</em>, and <em>Execution Boundaries</em> upfront, you remove emotion from the equation.
+                    <br><br>
+                    Start by clicking the <strong>(+) card</strong> below to build your first edge.
+                </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('strategy-banner').style.display='none'" style="border:none; color:var(--text-muted);">✕</button>
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
@@ -945,6 +993,9 @@
     </div>
 
     <div id="view-detail" class="section-view">
+        <div class="header-row" style="margin-bottom: 10px;">
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Blueprint detail. Review boundaries and execution quality.</p>
+        </div>
         <div class="detail-header">
             <div class="back-btn" onclick="switchView('library')">← Back</div>
             <div style="flex:1;">
@@ -1024,6 +1075,18 @@
 
 </main>
 
+<!-- Action Toast (Interactive) -->
+<div id="action-toast" style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(200px); background: var(--bg-card); border: 1px solid var(--primary); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; gap: 20px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); min-width: 400px;">
+    <div style="flex: 1;">
+        <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Session Ended</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Complete your Session Log (1–2 mins).</div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline btn-sm" onclick="dismissActionToast()">Later</button>
+        <button class="btn btn-primary btn-sm" onclick="completeSessionNow()">Complete Now</button>
+    </div>
+</div>
+
 <!-- Session Detail Modal -->
 <div class="modal-overlay" id="session-detail-modal">
     <div class="modal-box" style="width: 700px; max-height: 90vh; display: flex; flex-direction: column;">
@@ -1042,6 +1105,42 @@
                     <div id="sd-pnl" style="font-size: 20px; font-weight: 700;">$0</div>
                     <div id="sd-status" style="font-size: 12px; margin-top: 4px;">Active</div>
                 </div>
+            </div>
+
+            <!-- Closing Workflow Section (Visible only in Draft mode) -->
+            <div id="sd-closing-section" class="hidden" style="margin-bottom: 25px; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; padding: 20px;">
+                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                    <span>📝</span> Closing Session
+                </h4>
+                
+                <!-- Step 1: Unrated Trades -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">1. Unrated Trades</div>
+                    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--success);">
+                        <span>✓ All trades rated</span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Lock Highlight -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">2. Lock One Highlight</div>
+                    <div style="background: var(--bg-panel); padding: 10px; border-radius: 6px; border: 1px solid var(--border);">
+                        <select class="form-input" style="width: 100%; margin-bottom: 0; background: transparent; border: none;">
+                            <option>Select a highlight to lock...</option>
+                            <option>Avoid trading the first 5 mins of NQ open...</option>
+                            <option>Stop loss must be placed at technical levels...</option>
+                            <option>Wait for the candle close before entering...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Step 3: Add Note -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">3. Session Note (Optional)</div>
+                    <textarea class="form-input" placeholder="What did you learn today?" style="width: 100%; height: 60px; resize: none;"></textarea>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="finalizeSession()">Complete Session Log</button>
             </div>
 
             <!-- Stats Grid -->
@@ -1087,12 +1186,257 @@
                 </table>
             </div>
         </div>
-        <div style="padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;">
-            <button class="btn btn-outline btn-sm" onclick="closeSessionDetail()">Close</button>
-            <button class="btn btn-danger btn-sm" id="sd-end-btn">End Session</button>
+        <div style="padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.2);" onclick="simulateTradeClose()">⚡ +1 Trade</button>
+                <button class="btn btn-sm" style="background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2);" onclick="simulateMultipleTrades()">⚡ +3 Trades</button>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline btn-sm" onclick="closeSessionDetail()">Close</button>
+                <button class="btn btn-danger btn-sm" id="sd-end-btn">End Session</button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Quick Journal Modal (Moonlog Integration) -->
+<div class="modal-overlay" id="quick-journal-modal">
+    <div class="modal-box" style="width: 400px;">
+        <div style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size: 16px;">⚡ Quick Journal</h3>
+            <span style="cursor:pointer; color: var(--text-muted);" onclick="closeQuickJournal()">✕</span>
+        </div>
+        <div style="padding: 20px;">
+            <!-- Trade Context -->
+            <div style="background: var(--bg-panel); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <span style="font-weight: 600;">NQ</span>
+                        <span style="color: var(--success); margin-left: 8px;">Long</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 16px; font-weight: 700; color: var(--success);">+$120.00</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Just now</div>
+                    </div>
+                </div>
+                <!-- Blueprint Info (Conditional) -->
+                <div id="qj-blueprint-info" style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                    <span style="font-size: 14px;">📘</span>
+                    <span>Linked: <strong style="color: var(--primary);">Scalping Strategy</strong></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;">1. Execution Quality</label>
+                <div id="qj-stars" style="display: flex; gap: 5px;">
+                    <span class="star" style="font-size: 24px; color: var(--border); cursor: pointer;" onclick="setQJStar(1)">★</span>
+                    <span class="star" style="font-size: 24px; color: var(--border); cursor: pointer;" onclick="setQJStar(2)">★</span>
+                    <span class="star" style="font-size: 24px; color: var(--border); cursor: pointer;" onclick="setQJStar(3)">★</span>
+                    <span class="star" style="font-size: 24px; color: var(--border); cursor: pointer;" onclick="setQJStar(4)">★</span>
+                    <span class="star" style="font-size: 24px; color: var(--border); cursor: pointer;" onclick="setQJStar(5)">★</span>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;">2. Deviation?</label>
+                <div id="qj-deviation" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                    <button class="btn btn-outline btn-sm" onclick="selectQJDeviation(this, 'no')" style="border-color: var(--primary); color: var(--primary);">No</button>
+                    <button class="btn btn-outline btn-sm" onclick="selectQJDeviation(this, 'minor')">Minor</button>
+                    <button class="btn btn-outline btn-sm" onclick="selectQJDeviation(this, 'major')">Major</button>
+                    <button class="btn btn-outline btn-sm" onclick="selectQJDeviation(this, 'unsure')">Not Sure</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;">3. Factor</label>
+                <div id="qj-factor" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                    <span class="tag" style="padding: 8px 12px; cursor: pointer; text-align: center;" onclick="selectQJFactor(this, 'discipline')">Discipline</span>
+                    <span class="tag" style="padding: 8px 12px; cursor: pointer; text-align: center;" onclick="selectQJFactor(this, 'emotion')">Emotion</span>
+                    <span class="tag" style="padding: 8px 12px; cursor: pointer; text-align: center;" onclick="selectQJFactor(this, 'noise')">Market Noise</span>
+                    <span class="tag" style="padding: 8px 12px; cursor: pointer; text-align: center;" onclick="selectQJFactor(this, 'execution')">Execution</span>
+                </div>
+            </div>
+            
+            <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin: 0;">⏱️ Takes ~10 seconds • Can be edited later in TradeLog</p>
+        </div>
+        <div style="padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn btn-outline" onclick="saveQuickJournalLater()">Later</button>
+            <button class="btn btn-primary" onclick="saveQuickJournal()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- End Session Modal (Moonlog Integration) -->
+<div class="modal-overlay" id="end-session-modal">
+    <div class="modal-box" style="width: 450px;">
+        <div style="padding: 20px; text-align: center;">
+            <div style="width: 50px; height: 50px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                <span style="font-size: 24px;">📝</span>
+            </div>
+            <h3 style="margin-bottom: 10px; font-size: 18px;">Session Ended</h3>
+            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 25px;">
+                Great work! Your session is now in <strong>Draft</strong> mode.<br>
+                It takes just 1-2 minutes to close your books.
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-primary" style="padding: 12px;" onclick="goToMoonlogSession()">Complete Session Log Now</button>
+                <button class="btn btn-outline" style="padding: 12px;" onclick="closeEndSessionModal()">Do it Later (Save as Draft)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== QUICK JOURNAL STATE & FUNCTIONS ==========
+let quickJournalState = {
+    stars: 0,
+    deviation: 'no',
+    factor: null
+};
+
+function openQuickJournal(blueprintName = null) {
+    // Reset state
+    quickJournalState = { stars: 0, deviation: 'no', factor: null };
+    
+    // Reset UI
+    document.querySelectorAll('#qj-stars .star').forEach(s => s.style.color = 'var(--border)');
+    document.querySelectorAll('#qj-deviation button').forEach(b => {
+        b.style.borderColor = 'var(--border)';
+        b.style.color = 'var(--text-muted)';
+    });
+    document.querySelectorAll('#qj-factor .tag').forEach(t => {
+        t.style.background = 'var(--bg-panel)';
+        t.style.color = 'var(--text-muted)';
+    });
+    
+    // Set default deviation to 'no'
+    const noBtn = document.querySelector('#qj-deviation button:first-child');
+    if (noBtn) {
+        noBtn.style.borderColor = 'var(--primary)';
+        noBtn.style.color = 'var(--primary)';
+    }
+
+    // Handle Blueprint Info Display
+    const bpInfo = document.getElementById('qj-blueprint-info');
+    if (blueprintName) {
+        bpInfo.style.display = 'flex';
+        bpInfo.querySelector('strong').innerText = blueprintName;
+    } else {
+        bpInfo.style.display = 'none';
+    }
+    
+    document.getElementById('quick-journal-modal').classList.add('active');
+}
+
+function closeQuickJournal() {
+    document.getElementById('quick-journal-modal').classList.remove('active');
+}
+
+function setQJStar(rating) {
+    quickJournalState.stars = rating;
+    const stars = document.querySelectorAll('#qj-stars .star');
+    stars.forEach((star, idx) => {
+        star.style.color = idx < rating ? '#fbbf24' : 'var(--border)';
+    });
+}
+
+function selectQJDeviation(el, value) {
+    quickJournalState.deviation = value;
+    document.querySelectorAll('#qj-deviation button').forEach(b => {
+        b.style.borderColor = 'var(--border)';
+        b.style.color = 'var(--text-muted)';
+    });
+    el.style.borderColor = 'var(--primary)';
+    el.style.color = 'var(--primary)';
+}
+
+function selectQJFactor(el, value) {
+    quickJournalState.factor = value;
+    document.querySelectorAll('#qj-factor .tag').forEach(t => {
+        t.style.background = 'var(--bg-panel)';
+        t.style.color = 'var(--text-muted)';
+    });
+    el.style.background = 'var(--primary)';
+    el.style.color = 'white';
+}
+
+function saveQuickJournal() {
+    if (quickJournalState.stars === 0) {
+        alert('Please rate the execution quality');
+        return;
+    }
+    console.log('Quick Journal saved:', quickJournalState);
+    closeQuickJournal();
+    // Show toast or notification
+    showStrategyToast('Trade rated successfully! ✓');
+}
+
+function saveQuickJournalLater() {
+    closeQuickJournal();
+    showStrategyToast('Saved as pending - complete later in TradeLog');
+}
+
+function showStrategyToast(msg) {
+    // Create toast if not exists
+    let toast = document.getElementById('strategy-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'strategy-toast';
+        toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: var(--bg-card); color: var(--text-main); padding: 12px 20px; border-radius: 8px; border: 1px solid var(--border); z-index: 9999; opacity: 0; transition: opacity 0.3s;';
+        document.body.appendChild(toast);
+    }
+    toast.innerText = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => toast.style.opacity = '0', 3000);
+}
+
+function simulateTradeClose() {
+    // Close session detail modal first
+    closeSessionDetail();
+    
+    // Small delay then add to global Quick Journal queue
+    setTimeout(() => {
+        // Demo: Simulate a closed trade
+        const demoTrades = [
+            { symbol: 'NQ', side: 'long', pnl: 120.50, blueprint: 'Scalping Strategy', account: 'Main Account' },
+            { symbol: 'ES', side: 'short', pnl: -45.00, blueprint: null, account: 'Trading Account A' },
+            { symbol: 'EURUSD', side: 'long', pnl: 85.25, blueprint: 'Trend Follow', account: 'Main Account' },
+        ];
+        
+        // Pick a random demo trade
+        const trade = demoTrades[Math.floor(Math.random() * demoTrades.length)];
+        
+        // Add to global Quick Journal queue (from topbar.js)
+        if (typeof addTradeToQuickJournal === 'function') {
+            addTradeToQuickJournal(trade);
+        } else {
+            console.warn('Global Quick Journal not available');
+            showStrategyToast('Trade closed - ' + (trade.pnl >= 0 ? '+' : '') + '$' + trade.pnl.toFixed(2));
+        }
+    }, 300);
+}
+
+function simulateMultipleTrades() {
+    // Demo: Simulate multiple trades closing in quick succession
+    const trades = [
+        { symbol: 'NQ', side: 'long', pnl: 120.50, blueprint: 'Scalping Strategy', account: 'Main Account' },
+        { symbol: 'ES', side: 'short', pnl: -45.00, blueprint: null, account: 'Trading Account A' },
+        { symbol: 'EURUSD', side: 'long', pnl: 85.25, blueprint: 'Trend Follow', account: 'Main Account' },
+    ];
+    
+    if (typeof addTradeToQuickJournal === 'function') {
+        trades.forEach((trade, idx) => {
+            setTimeout(() => {
+                addTradeToQuickJournal(trade);
+            }, idx * 500); // Stagger by 500ms each
+        });
+    } else {
+        console.warn('Global Quick Journal not available');
+        showStrategyToast('3 trades closed');
+    }
+}
+</script>
 
 <div class="modal-overlay" id="wizard-modal">
     <div class="modal-box">
@@ -1391,7 +1735,7 @@
         const titleEl = document.getElementById('topbar-page-title');
         if (titleEl) {
             if (viewName === 'dashboard') titleEl.innerText = 'Execute Centre';
-            else if (viewName === 'library') titleEl.innerText = 'Strategy Deck';
+            else if (viewName === 'library') titleEl.innerText = 'Blueprint';
             else if (viewName === 'detail') titleEl.innerText = 'Blueprint Detail';
         }
     }
@@ -1967,6 +2311,13 @@
     // Active Sessions & Risk Guards State
     let sessions = [];
     let sessionIdCounter = 1;
+    let currentDraftSessionId = null;
+    let activeSessionPageIndex = 0; // Pagination state for active sessions
+
+    function changeSessionPage(index) {
+        activeSessionPageIndex = index;
+        renderActiveSessions();
+    }
 
     function startSession() {
         const accId = document.getElementById('account-select').value;
@@ -2004,7 +2355,8 @@
             rules: sessionRules,
             pnl: 0,
             trades: 0,
-            startTime: new Date()
+            startTime: new Date(),
+            status: 'Active'
         };
 
         sessions.push(newSession);
@@ -2018,9 +2370,73 @@
     }
 
     function endSession(sessionId) {
-        sessions = sessions.filter(s => s.id !== sessionId);
-        renderActiveSessions();
-        renderRiskGuards();
+        const session = sessions.find(s => s.id === sessionId);
+        if (session) {
+            session.status = 'Draft';
+            session.endTime = new Date();
+            renderActiveSessions();
+            
+            // Show Action Toast
+            currentDraftSessionId = sessionId;
+            const toast = document.getElementById('action-toast');
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+        }
+    }
+
+    function dismissActionToast() {
+        const toast = document.getElementById('action-toast');
+        toast.style.transform = 'translateX(-50%) translateY(200px)';
+    }
+
+    function completeSessionNow() {
+        dismissActionToast();
+        if (currentDraftSessionId) {
+            viewSessionDetail(currentDraftSessionId);
+        }
+    }
+
+    function finalizeSession() {
+        const session = sessions.find(s => s.id === currentDraftSessionId);
+        if (session) {
+            session.status = 'Completed';
+            renderActiveSessions();
+            closeSessionDetail();
+            showStrategyToast('Session Log Completed! ✓');
+        }
+    }
+
+    function goToMoonlogSession() {
+        // Redirect to Moonlog Session Detail (or Log)
+        window.location.href = '../Moonlog/Moonlog.html?view=session-detail';
+    }
+
+    function closeEndSessionModal() {
+        document.getElementById('end-session-modal').classList.remove('active');
+    }
+
+    // Highlight Logic
+    const highlightPool = [
+        "Avoid trading the first 5 mins of NQ open when VIX is above 20.",
+        "Stop loss must be placed at technical levels, not dollar amounts.",
+        "Wait for the candle close before entering on a reversal.",
+        "If you lose 2 trades in a row, take a 15 min walk."
+    ];
+
+    function swapHighlight() {
+        const el = document.getElementById('todays-highlight-text');
+        const current = el.innerText;
+        let next = highlightPool[Math.floor(Math.random() * highlightPool.length)];
+        while (next === current && highlightPool.length > 1) {
+            next = highlightPool[Math.floor(Math.random() * highlightPool.length)];
+        }
+        el.innerText = `"${next}"`;
+    }
+
+    function markHighlightReviewed() {
+        const card = document.getElementById('highlight-card');
+        card.style.opacity = '0.5';
+        card.style.pointerEvents = 'none';
+        // In a real app, save this state
     }
 
     function resetSessionForm() {
@@ -2041,72 +2457,148 @@
         
         countBadge.innerText = filteredSessions.length;
         
+        // Reset index if out of bounds
+        if (activeSessionPageIndex >= filteredSessions.length) {
+            activeSessionPageIndex = 0;
+        }
+
         if(filteredSessions.length === 0) {
-            container.classList.add('empty-grid');
-            const hasSessionsButFiltered = sessions.length > 0 && filteredSessions.length === 0;
-            container.innerHTML = `
-                <div class="empty-state" style="text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center;">
-                    <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">${hasSessionsButFiltered ? '🔍' : '📋'}</div>
-                    <p style="margin: 0; font-size: 13px;">${hasSessionsButFiltered ? 'No sessions for selected accounts' : 'No active sessions'}</p>
-                    <p style="margin: 5px 0 0; font-size: 12px; opacity: 0.7;">${hasSessionsButFiltered ? 'Change account filter to see other sessions' : 'Start a session to begin tracking'}</p>
-                </div>
-            `;
+            const hasSessionsButFiltered = sessions.length > 0;
+            container.className = 'empty-grid'; 
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.minHeight = '300px'; 
+            
+            if (hasSessionsButFiltered) {
+                 container.innerHTML = `
+                    <div style="text-align:center; opacity:0.5;">
+                        <div style="font-size:40px; margin-bottom:10px;">🔍</div>
+                        <p style="margin: 0; font-size: 14px;">No sessions for selected accounts</p>
+                        <p style="margin: 5px 0 0; font-size: 12px;">Change account filter to see other sessions</p>
+                    </div>
+                `;
+            } else {
+                // Enhanced Empty State
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 60px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0.6;">
+                        <div style="font-size:48px; margin-bottom:15px; filter: grayscale(1);">🚀</div>
+                        <h3 style="margin-bottom: 8px; color: var(--text-main); font-size: 16px; font-weight: 500;">Ready to Trade?</h3>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted); max-width: 260px; line-height: 1.5;">
+                            Configure your session on the left panel to begin tracking.
+                        </p>
+                    </div>
+                `;
+            }
             return;
         }
 
+        // Reset container styles for active content
+        container.style.display = 'block';
         container.classList.remove('empty-grid');
-        container.innerHTML = filteredSessions.map(session => {
-            const pnlClass = session.pnl >= 0 ? 'text-green' : 'text-red';
-            const pnlSign = session.pnl >= 0 ? '+' : '';
-            const duration = getSessionDuration(session.startTime);
-            
-            const typeLabel = session.isQuick ? 'Quick' : 'Blueprint';
-            const typeColor = session.isQuick ? 'var(--warning)' : 'var(--primary)';
-            const typeBg = session.isQuick ? 'rgba(245, 158, 11, 0.1)' : 'rgba(59, 130, 246, 0.1)';
-            
-            // Subtle gradient background based on PnL
-            const cardBg = session.pnl >= 0 
-                ? 'linear-gradient(to bottom right, rgba(16, 185, 129, 0.05), rgba(35, 39, 48, 0))' 
-                : 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.05), rgba(35, 39, 48, 0))';
+        
+        const session = filteredSessions[activeSessionPageIndex];
+        const pnlClass = session.pnl >= 0 ? 'text-green' : 'text-red';
+        const pnlSign = session.pnl >= 0 ? '+' : '';
+        const duration = getSessionDuration(session.startTime);
+        
+        const typeLabel = session.isQuick ? 'Quick' : 'Blueprint';
+        const typeColor = session.isQuick ? 'var(--warning)' : 'var(--primary)';
+        const typeBg = session.isQuick ? 'rgba(245, 158, 11, 0.1)' : 'rgba(59, 130, 246, 0.1)';
+        
+        // Status Badge Logic
+        let statusBadge = '';
+        if (session.status === 'Draft') {
+            statusBadge = `<span class="session-type-badge" style="color:var(--text-muted); background:rgba(255,255,255,0.1); margin-left:5px;">Draft</span>`;
+        } else if (session.status === 'Completed') {
+            statusBadge = `<span class="session-type-badge" style="color:var(--success); background:rgba(16, 185, 129, 0.1); margin-left:5px;">Completed</span>`;
+        }
+        
+        // Subtle gradient background based on PnL
+        const cardBg = session.pnl >= 0 
+            ? 'linear-gradient(to bottom right, rgba(16, 185, 129, 0.05), rgba(35, 39, 48, 0))' 
+            : 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.05), rgba(35, 39, 48, 0))';
 
-            return `
-                <div class="session-card" style="background-image: ${cardBg};">
-                    <div class="session-header">
-                        <div class="session-identity">
-                            <span class="session-type-badge" style="color:${typeColor}; background:${typeBg}">${typeLabel}</span>
-                            <div class="session-name">${session.name}</div>
-                            <div class="session-account">${session.accountName}</div>
-                        </div>
-                        <div class="session-pnl-box">
-                            <div class="session-pnl ${pnlClass}">${pnlSign}$${Math.abs(session.pnl).toFixed(2)}</div>
-                            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Net P&L</div>
-                        </div>
+        // Pagination Dots
+        let paginationHtml = '';
+        if (filteredSessions.length > 1) {
+            paginationHtml = `<div style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
+                ${filteredSessions.map((_, idx) => `
+                    <div onclick="changeSessionPage(${idx})" 
+                         style="width: 8px; height: 8px; border-radius: 50%; cursor: pointer; background: ${idx === activeSessionPageIndex ? 'var(--primary)' : 'var(--border)'}; transition: all 0.2s;">
                     </div>
-                    
-                    <div class="session-stats-grid">
-                        <div class="session-stat">
-                            <span class="session-stat-label">Duration</span>
-                            <span class="session-stat-value">${duration}</span>
-                        </div>
-                        <div class="session-stat">
-                            <span class="session-stat-label">Trades</span>
-                            <span class="session-stat-value">${session.trades}</span>
-                        </div>
-                    </div>
+                `).join('')}
+            </div>`;
+        }
 
-                    <div class="session-actions">
-                        <button class="btn btn-outline btn-sm" onclick="viewSessionDetail(${session.id})">View</button>
-                        <button class="btn btn-sm" style="background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2);" onclick="endSession(${session.id})">End</button>
+        // Render Single Expanded Card
+        container.innerHTML = `
+            <div class="session-card expanded" style="background-image: ${cardBg}; padding: 25px; min-height: 300px; display: flex; flex-direction: column;">
+                <div class="session-header" style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
+                    <div class="session-identity">
+                        <div style="display:flex; align-items:center; gap: 10px; margin-bottom: 5px;">
+                            <span class="session-type-badge" style="color:${typeColor}; background:${typeBg}; font-size: 12px; padding: 4px 10px;">${typeLabel}</span>
+                            ${statusBadge}
+                            <span style="font-size: 12px; color: var(--text-muted);">${session.accountName}</span>
+                        </div>
+                        <div class="session-name" style="font-size: 24px; margin-bottom: 0;">${session.name}</div>
+                    </div>
+                    <div class="session-pnl-box" style="text-align: right;">
+                        <div class="session-pnl ${pnlClass}" style="font-size: 28px;">${pnlSign}$${Math.abs(session.pnl).toFixed(2)}</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Net P&L</div>
                     </div>
                 </div>
-            `;
-        }).join('');
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;">
+                    <div style="background: var(--bg-panel); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Duration</div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">${duration}</div>
+                    </div>
+                    <div style="background: var(--bg-panel); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Trades</div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">${session.trades}</div>
+                    </div>
+                    <div style="background: var(--bg-panel); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Win Rate</div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">65%</div>
+                    </div>
+                    <div style="background: var(--bg-panel); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Avg Trade</div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 4px;">$${(session.pnl / (session.trades || 1)).toFixed(2)}</div>
+                    </div>
+                </div>
+
+                <div style="flex: 1; background: var(--bg-panel); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between;">
+                        <span>Recent Activity</span>
+                        <span>${session.trades} Trades</span>
+                    </div>
+                    <!-- Mock Mini Chart or List -->
+                    <div style="display: flex; gap: 4px; height: 40px; align-items: flex-end;">
+                        ${Array.from({length: 10}).map((_, i) => {
+                            const h = Math.random() * 100;
+                            const isWin = Math.random() > 0.4;
+                            return `<div style="flex: 1; background: ${isWin ? 'var(--success)' : 'var(--danger)'}; height: ${h}%; opacity: 0.3; border-radius: 2px;"></div>`;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="session-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: auto;">
+                    <button class="btn btn-outline" onclick="viewSessionDetail(${session.id})">Full Details</button>
+                    ${session.status === 'Active' ? `<button class="btn btn-danger" onclick="endSession(${session.id})">End Session</button>` : ''}
+                </div>
+            </div>
+            ${paginationHtml}
+        `;
     }
 
     function renderRiskGuards() {
         const emptyState = document.getElementById('risk-guard-empty');
         const grid = document.getElementById('risk-guards-grid');
         
+        if (!grid) return;
+
         // Filter sessions by selected accounts first
         const filteredSessions = sessions.filter(s => {
             const acc = accounts[s.accountId];
@@ -2247,13 +2739,35 @@
         pnlEl.innerText = (session.pnl >= 0 ? '+' : '') + '$' + session.pnl.toFixed(2);
         pnlEl.className = session.pnl >= 0 ? 'text-green' : 'text-red';
         
-        document.getElementById('sd-status').innerText = session.isActive ? 'Active' : 'Closed';
+        document.getElementById('sd-status').innerText = session.status || 'Active';
 
         // Populate Stats
         document.getElementById('sd-trades').innerText = session.trades;
         document.getElementById('sd-winrate').innerText = '65%'; // Mock data
         document.getElementById('sd-duration').innerText = getSessionDuration(session.startTime);
         document.getElementById('sd-avg').innerText = '$' + (session.pnl / (session.trades || 1)).toFixed(2);
+
+        // Handle Closing Section Visibility
+        const closingSection = document.getElementById('sd-closing-section');
+        const endBtn = document.getElementById('sd-end-btn');
+        
+        if (session.status === 'Draft') {
+            if(closingSection) closingSection.classList.remove('hidden');
+            if(endBtn) endBtn.style.display = 'none';
+        } else {
+            if(closingSection) closingSection.classList.add('hidden');
+            if(endBtn) {
+                if (session.status === 'Active' || !session.status) {
+                    endBtn.style.display = 'block';
+                    endBtn.onclick = () => {
+                        closeSessionDetail();
+                        endSession(sessionId);
+                    };
+                } else {
+                    endBtn.style.display = 'none';
+                }
+            }
+        }
 
         // Populate Context Section based on Session Type
         const contextEl = document.getElementById('sd-context-section');
@@ -2565,7 +3079,25 @@
         const grid = document.getElementById('blueprint-grid');
         if (!grid) return;
         
-        grid.innerHTML = Object.keys(blueprints).map(bpId => {
+        // Add New Card HTML
+        const addNewCardHtml = `
+            <div class="bp-card-container" onclick="openWizard()">
+                <div class="bp-card-inner">
+                    <div class="bp-card-front" style="border: 2px dashed var(--border); background: transparent; justify-content: center; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--bg-panel); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px;">+</div>
+                        <div style="text-align: center;">
+                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Create Strategy</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Define rules & boundaries</div>
+                        </div>
+                    </div>
+                    <div class="bp-card-back" style="border: 2px dashed var(--primary); background: rgba(59, 130, 246, 0.05); justify-content: center; align-items: center;">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); openWizard()">Start Wizard</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const cardsHtml = Object.keys(blueprints).map(bpId => {
             const bp = blueprints[bpId];
             const pnlClass = bp.netPnL >= 0 ? 'text-green' : 'text-red';
             const pnlSign = bp.netPnL >= 0 ? '+' : '';
@@ -2585,47 +3117,47 @@
                     <div class="bp-card-inner">
                         <!-- Front Side -->
                         <div class="bp-card-front">
-                            <div class="bp-header" style="border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px;">
+                            <div class="bp-header" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
                                 <div class="bp-title-row">
-                                    <div class="bp-name">${bp.name}<br><span style="font-size:13px; font-weight:400; color:var(--text-muted);">${bp.market.symbol} · ${bp.tradingStyle}</span></div>
-                                    <span class="tag" style="color:${statusColor}; background:${statusBg}">
-                                        <span class="status-dot ${statusDot}"></span>${statusText}
+                                    <div class="bp-name" style="font-size: 15px;">${bp.name}<br><span style="font-size:12px; font-weight:400; color:var(--text-muted);">${bp.market.symbol} · ${bp.tradingStyle}</span></div>
+                                    <span class="tag" style="color:${statusColor}; background:${statusBg}; padding: 2px 8px;">
+                                        <span class="status-dot ${statusDot}" style="width: 6px; height: 6px;"></span>${statusText}
                                     </span>
                                 </div>
-                                <div class="bp-tags" style="margin-top:10px;">
-                                    ${bp.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                                <div class="bp-tags" style="margin-top:8px;">
+                                    ${bp.tags.map(t => `<span class="tag" style="font-size: 10px; padding: 2px 8px;">${t}</span>`).join('')}
                                 </div>
                             </div>
 
-                            <div class="bp-stats">
+                            <div class="bp-stats" style="gap: 8px;">
                                 <div class="stat-item">
-                                    <div class="stat-label">Net P&L</div>
-                                    <div class="stat-value ${pnlClass}">${pnlSign}$${Math.abs(bp.netPnL).toLocaleString()}</div>
+                                    <div class="stat-label" style="font-size: 9px;">Net P&L</div>
+                                    <div class="stat-value ${pnlClass}" style="font-size: 13px;">${pnlSign}$${Math.abs(bp.netPnL).toLocaleString()}</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label">Win Rate</div>
-                                    <div class="stat-value">${bp.winRate}%</div>
+                                    <div class="stat-label" style="font-size: 9px;">Win Rate</div>
+                                    <div class="stat-value" style="font-size: 13px;">${bp.winRate}%</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label">Avg R:R</div>
-                                    <div class="stat-value">${bp.avgRR}</div>
+                                    <div class="stat-label" style="font-size: 9px;">Avg R:R</div>
+                                    <div class="stat-value" style="font-size: 13px;">${bp.avgRR}</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label">Max DD</div>
-                                    <div class="stat-value text-red">${bp.maxDD}%</div>
+                                    <div class="stat-label" style="font-size: 9px;">Max DD</div>
+                                    <div class="stat-value text-red" style="font-size: 13px;">${bp.maxDD}%</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label">Trades</div>
-                                    <div class="stat-value">${bp.trades}</div>
+                                    <div class="stat-label" style="font-size: 9px;">Trades</div>
+                                    <div class="stat-value" style="font-size: 13px;">${bp.trades}</div>
                                 </div>
                             </div>
 
-                            <div class="bp-footer" style="border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px;">
-                                <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="bp-footer" style="border-top: 1px solid var(--border); padding-top: 10px; margin-top: auto;">
+                                <div style="display:flex; align-items:center; gap:6px;">
                                     <span style="color:var(--text-muted);">DMI:</span>
                                     <span style="color:${dmiColor}; font-weight:600;">${dmiArrow} ${bp.dmiTrend}</span>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:6px;">
                                     <span style="color:var(--text-muted);">Risk:</span>
                                     <span style="color:${bp.riskStatus === 'Stable' ? 'var(--success)' : 'var(--text-muted)'};">${bp.riskStatus}</span>
                                 </div>
@@ -2635,43 +3167,45 @@
                         <!-- Back Side (Summary) -->
                         <div class="bp-card-back">
                             <div>
-                                <div class="bp-back-header">Strategy Profile</div>
+                                <div class="bp-back-header" style="margin-bottom: 10px;">Strategy Profile</div>
                                 
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Type</span>
                                     <span class="bp-back-value">${bp.strategyType}</span>
                                 </div>
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Holding</span>
                                     <span class="bp-back-value">${bp.holdingDuration}</span>
                                 </div>
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Profit Method</span>
                                     <span class="bp-back-value">${bp.profitMethod}</span>
                                 </div>
                                 
-                                <div class="bp-back-header" style="margin-top: 20px;">Risk Rules</div>
+                                <div class="bp-back-header" style="margin-top: 15px; margin-bottom: 10px;">Risk Rules</div>
                                 
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Max Risk</span>
                                     <span class="bp-back-value">${bp.maxRiskPerTrade}</span>
                                 </div>
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Min R:R</span>
                                     <span class="bp-back-value">${bp.minRR}</span>
                                 </div>
-                                <div class="bp-back-row">
+                                <div class="bp-back-row" style="margin-bottom: 6px;">
                                     <span class="bp-back-label">Strict Rules</span>
                                     <span class="bp-back-value">${strictCount} Active</span>
                                 </div>
                             </div>
                             
-                            <button class="btn btn-primary btn-sm" style="width:100%; margin-top:10px;">View Full Details</button>
+                            <button class="btn btn-primary btn-sm" style="width:100%; margin-top:auto;">View Full Details</button>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
+
+        grid.innerHTML = addNewCardHtml + cardsHtml;
     }
 
     // --- Blueprint Selector for Execute Centre ---
@@ -2696,14 +3230,48 @@
         const bp = blueprints[bpId];
         if (!bp) return;
         
+        // Enhanced Blueprint Detail Display
+        const strictCount = Object.values(bp.boundaries).filter(v => v === 'No' || v === 'Strict').length;
+        const pnlClass = bp.netPnL >= 0 ? 'text-green' : 'text-red';
+        const pnlSign = bp.netPnL >= 0 ? '+' : '';
+
         display.innerHTML = `
-            <div style="display:flex; flex-wrap:wrap; gap: 8px 16px; align-items:center;">
-                <span>✓ <strong>${bp.market.symbol}</strong> ${bp.tradingStyle}</span>
-                <span>· Risk: ${bp.maxRiskPerTrade}/trade</span>
-                <span>· Min R:R: ${bp.minRR}</span>
-                <span>· Stop: ${bp.stopLossMethod}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                <div>
+                    <div style="font-weight: 600; color: var(--text-main);">${bp.name}</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">${bp.market.symbol} · ${bp.tradingStyle}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="${pnlClass}" style="font-weight: 600;">${pnlSign}$${Math.abs(bp.netPnL).toLocaleString()}</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Net P&L</div>
+                </div>
             </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 4px;">
+                    <div style="font-size: 9px; color: var(--text-muted);">Win Rate</div>
+                    <div style="font-weight: 600;">${bp.winRate}%</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 4px;">
+                    <div style="font-size: 9px; color: var(--text-muted);">Avg R:R</div>
+                    <div style="font-weight: 600;">${bp.avgRR}</div>
+                </div>
+            </div>
+
+            <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px;">Risk Rules:</div>
+            <ul style="margin: 0; padding-left: 15px; list-style-type: disc; color: var(--text-main);">
+                <li>Max Risk: ${bp.maxRiskPerTrade}</li>
+                <li>Min R:R: ${bp.minRR}</li>
+                <li>${strictCount} Strict Boundaries Active</li>
+            </ul>
         `;
+        
+        // Update container style to be cleaner
+        display.style.background = 'var(--bg-panel)';
+        display.style.border = '1px solid var(--border)';
+        display.style.color = 'var(--text-main)';
+        display.style.padding = '12px';
+        display.style.borderRadius = '6px';
     }
 
     // --- Account Filter Functions ---
@@ -2834,6 +3402,8 @@
         // Initialize account-filtered components
         renderRiskOverview();
         renderAccountSelect();
+        renderActiveSessions(); // Initialize Active Sessions (Empty State)
+        renderRiskGuards();     // Initialize Risk Guards
         
         renderBlueprintCards();
         renderBlueprintSelector();

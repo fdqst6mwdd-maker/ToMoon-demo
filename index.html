@@ -186,7 +186,7 @@
             flex-direction: column; 
             position: relative; 
             transition: box-shadow 0.2s, border-color 0.2s; 
-            overflow: hidden;
+            overflow: visible;
             min-height: 120px; /* Prevent over-shrinking */
             box-sizing: border-box; /* Include padding in width calculation */
         }
@@ -572,6 +572,150 @@
         .cal-val { font-size: 11px; font-weight: 600; }
         .cal-dot { width: 4px; height: 4px; border-radius: 50%; position: absolute; bottom: 6px; right: 6px; }
         
+        /* --- Tooltips with Info Icon --- */
+        .kpi-box {
+            position: relative;
+            overflow: visible;
+        }
+        .kpi-info-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: all 0.2s;
+            opacity: 0.5;
+        }
+        .kpi-info-icon:hover {
+            opacity: 1;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+        }
+        .kpi-tooltip {
+            visibility: hidden;
+            width: 180px;
+            background-color: var(--bg-panel);
+            color: var(--text-main);
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 9999;
+            bottom: calc(100% + 4px);
+            right: 0;
+            transform: translateY(0);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            font-size: 11px;
+            font-weight: normal;
+            pointer-events: none;
+            line-height: 1.4;
+            white-space: normal;
+        }
+        .kpi-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 12px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--border) transparent transparent transparent;
+        }
+        .kpi-info-icon:hover + .kpi-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(-3px);
+        }
+        /* Ensure overview-grid doesn't clip tooltips */
+        .overview-grid {
+            overflow: visible;
+        }
+        .card-content-scroll {
+            overflow: visible;
+        }
+        #card-performance .card-content-scroll {
+            overflow: visible;
+        }
+
+        /* --- Calendar Compact Mode --- */
+        .calendar-grid.compact-mode {
+            grid-template-columns: repeat(7, 1fr) !important;
+        }
+        .calendar-grid.compact-mode .weekly-summary,
+        .calendar-grid.compact-mode .cal-header:nth-child(8) {
+            display: none;
+        }
+        .calendar-grid.compact-mode .cal-val {
+            display: none;
+        }
+        .calendar-grid.compact-mode .cal-date {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        .calendar-grid.compact-mode .cal-day {
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+        .cal-dot-indicator {
+            display: none;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .calendar-grid.compact-mode .cal-dot-indicator {
+            display: block;
+        }
+
+        /* Calendar Navigation */
+        .cal-nav-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--bg-panel);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            padding: 0;
+            line-height: 1;
+            position: relative;
+            z-index: 10;
+            user-select: none;
+        }
+        .cal-nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.15);
+        }
+        .cal-nav-btn:active {
+            transform: scale(0.9);
+            background: rgba(59, 130, 246, 0.25);
+        }
+
         /* --- Customize Modal --- */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-box { width: 800px; max-height: 90vh; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
@@ -837,28 +981,37 @@
         </div>
 
         <!-- DMI Summary -->
-        <div class="card col-span-3" id="card-dmi">
-            <button class="card-close-btn" onclick="hideWidget('card-dmi')">✕</button>
+        <div class="card col-span-3" id="card-dmi" style="cursor: pointer;" onclick="window.location.href='Insight/Insight_demo_v1.4-fix.html?view=dmi'">
+            <button class="card-close-btn" onclick="event.stopPropagation(); hideWidget('card-dmi')">✕</button>
             <div class="resize-handle"></div>
             <div class="card-header">
-                <h3 class="card-title">DMI Score</h3>
+                <h3 class="card-title">DMI Insight</h3>
                 <span style="font-size: 18px;">🧠</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                <div>
-                    <div class="dmi-score">0.82</div>
-                    <div class="dmi-status">High Focus</div>
+            
+            <!-- Mini Insight Thumbnail -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div style="font-size: 24px; font-weight: 800; color: var(--success);">Strong</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Stable (12 trades)</div>
                 </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; color: var(--text-muted);">Trend</div>
-                    <div class="text-green" style="font-size: 14px; font-weight: 600;">↗ Rising</div>
+
+                <!-- Mini Zone Spectrum -->
+                <div style="position: relative; height: 8px; background: #333; border-radius: 4px; display: flex; overflow: hidden;">
+                    <div style="width: 45%; background: rgba(239, 68, 68, 0.3);"></div>
+                    <div style="width: 15%; background: rgba(249, 115, 22, 0.3);"></div>
+                    <div style="width: 15%; background: rgba(245, 158, 11, 0.3);"></div>
+                    <div style="width: 25%; background: rgba(16, 185, 129, 0.3);"></div>
+                    
+                    <!-- Marker -->
+                    <div style="position: absolute; top: -2px; bottom: -2px; left: 82%; width: 2px; background: white; box-shadow: 0 0 4px white;"></div>
+                </div>
+                
+                <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                    <span>Risky</span>
+                    <span>Strong</span>
                 </div>
             </div>
-            <!-- Simple SVG Sparkline -->
-            <svg class="mini-chart" viewBox="0 0 100 30" preserveAspectRatio="none">
-                <path d="M0,25 Q20,20 40,15 T100,5" fill="none" stroke="#10b981" stroke-width="2" />
-                <path d="M0,25 L100,25" fill="none" stroke="#334155" stroke-width="1" stroke-dasharray="2" />
-            </svg>
         </div>
 
         <!-- Risk Guard Overview -->
@@ -909,74 +1062,19 @@
             <button class="card-close-btn" onclick="hideWidget('card-calendar')">✕</button>
             <div class="resize-handle"></div>
             <div class="card-header">
-                <h3 class="card-title">Trading Calendar <span style="font-size: 12px; font-weight: 400; color: var(--text-muted); margin-left: 10px;">(December 2025)</span></h3>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h3 class="card-title" style="margin-right: 5px;">Trading Calendar</h3>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" class="cal-nav-btn" id="cal-prev-btn" title="Previous Month">&lt;</button>
+                        <span id="calendar-month-label" style="font-size: 13px; font-weight: 600; min-width: 120px; text-align: center;">December 2025</span>
+                        <button type="button" class="cal-nav-btn" id="cal-next-btn" title="Next Month">&gt;</button>
+                    </div>
+                </div>
                 <button class="btn btn-outline btn-sm">Full View</button>
             </div>
-            <div class="card-content-scroll">
-                <div class="calendar-grid">
-                    <!-- Header Row -->
-                    <div class="cal-header">Sun</div>
-                    <div class="cal-header">Mon</div>
-                    <div class="cal-header">Tue</div>
-                    <div class="cal-header">Wed</div>
-                    <div class="cal-header">Thu</div>
-                    <div class="cal-header">Fri</div>
-                    <div class="cal-header">Sat</div>
-                    <div class="cal-header">Weekly</div>
-                    
-                    <!-- Week 1 -->
-                    <div class="cal-day" style="opacity: 0.3;">
-                        <span class="cal-date">30 Nov</span>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-date">01 Dec</span>
-                        <span class="cal-val text-green">+$450</span>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-date">02 Dec</span>
-                        <span class="cal-val text-red">-$120</span>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-date">03 Dec</span>
-                        <span class="cal-val text-green">+$890</span>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-date">04 Dec</span>
-                        <span class="cal-val" style="color:var(--text-muted)">-</span>
-                    </div>
-                    <div class="cal-day">
-                        <span class="cal-date">05 Dec</span>
-                        <span class="cal-val text-green">+$210</span>
-                    </div>
-                    <div class="cal-day" style="background: rgba(255,255,255,0.02);">
-                        <span class="cal-date">06 Dec</span>
-                    </div>
-                    <div class="cal-day weekly-summary">
-                        <span class="weekly-label">Week 1</span>
-                        <span class="weekly-value text-green">+$1,430</span>
-                        <span class="weekly-trades">12 trades</span>
-                    </div>
-                    
-                    <!-- Week 2 -->
-                    <div class="cal-day" style="background: rgba(255,255,255,0.02);">
-                        <span class="cal-date">07 Dec</span>
-                    </div>
-                    <div class="cal-day" style="border-color: var(--primary); background: rgba(59, 130, 246, 0.05);">
-                        <span class="cal-date">08 Dec</span>
-                        <span class="cal-val text-green">+$320</span>
-                    </div>
-                    <div class="cal-day"><span class="cal-date">09 Dec</span></div>
-                    <div class="cal-day"><span class="cal-date">10 Dec</span></div>
-                    <div class="cal-day"><span class="cal-date">11 Dec</span></div>
-                    <div class="cal-day"><span class="cal-date">12 Dec</span></div>
-                    <div class="cal-day" style="background: rgba(255,255,255,0.02);">
-                        <span class="cal-date">13 Dec</span>
-                    </div>
-                    <div class="cal-day weekly-summary">
-                        <span class="weekly-label">Week 2</span>
-                        <span class="weekly-value text-green">+$320</span>
-                        <span class="weekly-trades">1 trade</span>
-                    </div>
+            <div class="card-content-scroll" style="overflow-x: auto;">
+                <div class="calendar-grid" id="dashboard-calendar-grid">
+                    <!-- Dynamic calendar content rendered by JS -->
                 </div>
             </div>
         </div>
@@ -990,10 +1088,10 @@
             </div>
             <div style="display: flex; gap: 30px; align-items: center;">
                 <!-- CSS Pie Chart -->
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 60%, var(--danger) 60% 80%, var(--warning) 80% 100%); flex-shrink: 0;"></div>
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 30%, var(--success) 30% 50%, var(--warning) 50% 65%, var(--danger) 65% 80%, #8b5cf6 80% 90%, #64748b 90% 100%); flex-shrink: 0;"></div>
                 
                 <div style="flex: 1;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Dominant Emotion: <span style="color: var(--primary);">Calm (60%)</span></h4>
+                    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Dominant Emotion: <span style="color: var(--primary);">Calm (30%)</span></h4>
                     <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;">
                         You are trading with a clear head today. Performance is 20% better when in "Calm" state compared to your monthly average.
                     </p>
@@ -1507,6 +1605,8 @@
                 div.className = 'kpi-box';
                 div.dataset.id = metric.id;
                 div.innerHTML = `
+                    <div class="kpi-info-icon">?</div>
+                    <div class="kpi-tooltip">${metric.desc}</div>
                     <div class="kpi-label">${metric.label}</div>
                     <div class="kpi-value ${metric.trendClass.includes('green') || metric.trendClass.includes('red') ? metric.trendClass : ''}">${metric.value}</div>
                     <div class="kpi-trend ${metric.trendClass}">${metric.trend}</div>
@@ -1647,6 +1747,259 @@
 
     // Init
     renderPerformanceMetrics();
+
+    // ========== Calendar Logic ==========
+    // Mock trading data for demonstration
+    const tradingData = {
+        '2025-12': {
+            1: { pnl: 450, trades: 3 },
+            2: { pnl: -120, trades: 2 },
+            3: { pnl: 890, trades: 4 },
+            5: { pnl: 210, trades: 2 },
+            8: { pnl: 320, trades: 1 },
+            9: { pnl: -150, trades: 2 },
+            10: { pnl: 550, trades: 3 },
+            12: { pnl: 120, trades: 1 },
+            15: { pnl: -200, trades: 2 },
+            16: { pnl: 400, trades: 2 },
+            17: { pnl: 150, trades: 1 },
+            18: { pnl: -50, trades: 1 },
+            19: { pnl: 300, trades: 2 },
+            22: { pnl: 100, trades: 1 },
+            24: { pnl: 250, trades: 2 },
+            26: { pnl: 180, trades: 1 },
+            29: { pnl: 220, trades: 2 },
+            30: { pnl: -80, trades: 1 }
+        },
+        '2025-11': {
+            3: { pnl: 280, trades: 2 },
+            4: { pnl: 320, trades: 2 },
+            5: { pnl: -100, trades: 1 },
+            6: { pnl: 450, trades: 3 },
+            7: { pnl: 180, trades: 1 },
+            10: { pnl: -80, trades: 1 },
+            11: { pnl: 200, trades: 2 },
+            12: { pnl: -50, trades: 1 },
+            13: { pnl: 380, trades: 2 },
+            14: { pnl: 220, trades: 2 },
+            17: { pnl: 350, trades: 3 },
+            18: { pnl: 150, trades: 1 },
+            19: { pnl: 280, trades: 2 },
+            20: { pnl: -120, trades: 1 },
+            21: { pnl: 190, trades: 1 },
+            24: { pnl: -60, trades: 1 },
+            25: { pnl: 500, trades: 3 },
+            26: { pnl: 180, trades: 2 },
+            28: { pnl: 240, trades: 2 }
+        }
+        // Note: January 2026 has no data yet - it's in the future
+    };
+
+    const holidays = {
+        '2025-12-25': 'Holiday',
+        '2026-01-01': 'New Year'
+    };
+
+    let currentCalendarDate = new Date(2025, 11, 1); // December 2025
+    let calendarResizeObserver = null;
+
+    function calendarRender() {
+        try {
+            const grid = document.getElementById('dashboard-calendar-grid');
+            const label = document.getElementById('calendar-month-label');
+            
+            if (!grid) return;
+            if (!label) return;
+
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            label.textContent = `${monthNames[month]} ${year}`;
+        
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        
+        // Data key
+        const dataKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const monthData = tradingData[dataKey] || {};
+        
+        let html = '';
+        
+        // Header row
+        const headers = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Weekly'];
+        headers.forEach(h => {
+            html += `<div class="cal-header">${h}</div>`;
+        });
+        
+        // Calculate weeks
+        let currentDay = 1;
+        let weekNum = 1;
+        const today = new Date();
+        
+        // Fill calendar (max 6 weeks to cover any month)
+        for (let week = 0; week < 6; week++) {
+            // if (currentDay > daysInMonth) break; // Removed to ensure full grid rendering
+            
+            let weekPnl = 0;
+            let weekTrades = 0;
+            
+            // Days in week
+            for (let dow = 0; dow < 7; dow++) {
+                if (week === 0 && dow < firstDay) {
+                    // Previous month days
+                    const prevDay = daysInPrevMonth - (firstDay - dow - 1);
+                    const prevMonth = month === 0 ? 11 : month - 1;
+                    const prevYear = month === 0 ? year - 1 : year;
+                    const prevMonthName = monthNames[prevMonth].slice(0, 3);
+                    html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${prevDay} ${prevMonthName}</span></div>`;
+                } else if (currentDay > daysInMonth) {
+                    // Next month days
+                    const nextDay = currentDay - daysInMonth;
+                    const nextMonth = month === 11 ? 0 : month + 1;
+                    const nextMonthName = monthNames[nextMonth].slice(0, 3);
+                    html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${nextDay} ${nextMonthName}</span></div>`;
+                    currentDay++;
+                } else {
+                    // Current month days
+                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
+                    const isWeekend = dow === 0 || dow === 6;
+                    const isToday = year === today.getFullYear() && month === today.getMonth() && currentDay === today.getDate();
+                    const dayData = monthData[currentDay];
+                    const holiday = holidays[dateKey];
+                    
+                    let bgStyle = isWeekend ? 'background: rgba(255,255,255,0.02);' : '';
+                    let borderStyle = isToday ? 'border-color: var(--primary); background: rgba(59, 130, 246, 0.05);' : '';
+                    
+                    let valHtml = '';
+                    let dotColor = '';
+                    
+                    if (holiday) {
+                        valHtml = `<span class="cal-val" style="color:var(--text-muted)">${holiday}</span>`;
+                    } else if (dayData) {
+                        const pnl = dayData.pnl;
+                        weekPnl += pnl;
+                        weekTrades += dayData.trades;
+                        const colorClass = pnl >= 0 ? 'text-green' : 'text-red';
+                        const sign = pnl >= 0 ? '+' : '';
+                        valHtml = `<span class="cal-val ${colorClass}">${sign}$${Math.abs(pnl).toLocaleString()}</span>`;
+                        dotColor = pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+                    } else if (!isWeekend) {
+                        valHtml = `<span class="cal-val" style="color:var(--text-muted)">-</span>`;
+                    }
+                    
+                    const dayLabel = currentDay === 1 ? `${currentDay} ${monthNames[month].slice(0, 3)}` : currentDay;
+                    const dotHtml = dotColor ? `<div class="cal-dot-indicator" style="background-color: ${dotColor};"></div>` : '';
+                    
+                    html += `<div class="cal-day" style="${bgStyle}${borderStyle}">
+                        <span class="cal-date">${dayLabel}</span>
+                        ${valHtml}
+                        ${dotHtml}
+                    </div>`;
+                    currentDay++;
+                }
+            }
+            
+            // Weekly summary
+            const weekColorClass = weekPnl >= 0 ? 'text-green' : 'text-red';
+            const weekSign = weekPnl >= 0 ? '+' : '';
+            html += `<div class="cal-day weekly-summary">
+                <span class="weekly-label">Week ${weekNum}</span>
+                <span class="weekly-value ${weekColorClass}">${weekSign}$${Math.abs(weekPnl).toLocaleString()}</span>
+                <span class="weekly-trades">${weekTrades} trades</span>
+            </div>`;
+            weekNum++;
+        }
+        
+            grid.innerHTML = html;
+            
+            // Setup resize observer for compact mode
+            setupCalendarResize();
+        } catch (err) {
+            console.error('[Calendar] calendarRender error:', err);
+        }
+    }
+
+    function calendarChangeMonth(delta) {
+        // Create a new date to avoid mutation issues
+        const newYear = currentCalendarDate.getFullYear();
+        const newMonth = currentCalendarDate.getMonth() + delta;
+        currentCalendarDate = new Date(newYear, newMonth, 1);
+        
+        try {
+            calendarRender();
+        } catch (err) {
+            console.error('[Calendar] calendarRender threw:', err);
+        }
+    }
+
+    // Bind calendar navigation buttons
+    let calendarNavBound = false;
+
+    function handleCalendarNavClick(e) {
+        try {
+            const prev = e && e.target && e.target.closest ? e.target.closest('#cal-prev-btn') : null;
+            const next = e && e.target && e.target.closest ? e.target.closest('#cal-next-btn') : null;
+
+            if (!prev && !next) return;
+
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
+            const delta = prev ? -1 : 1;
+            calendarChangeMonth(delta);
+        } catch (err) {
+            console.error('[Calendar] nav handler error:', err);
+        }
+    }
+
+    function initCalendarNavigation() {
+        if (calendarNavBound) return;
+        calendarNavBound = true;
+
+        const prevBtn = document.getElementById('cal-prev-btn');
+        const nextBtn = document.getElementById('cal-next-btn');
+
+        // Direct bindings (best case)
+        if (prevBtn) prevBtn.addEventListener('click', handleCalendarNavClick);
+        if (nextBtn) nextBtn.addEventListener('click', handleCalendarNavClick);
+
+        // Delegated binding (capture phase) to survive bubbling issues / DOM changes
+        document.addEventListener('click', handleCalendarNavClick, true);
+    }
+
+    function setupCalendarResize() {
+        const calendarCard = document.getElementById('card-calendar');
+        const calendarGrid = document.getElementById('dashboard-calendar-grid');
+
+        if (!calendarCard || !calendarGrid) return;
+
+        // Some environments (older browsers / embedded webviews) don't support ResizeObserver.
+        // If we throw here, the rest of the script (including month navigation binding) won't run.
+        if (typeof ResizeObserver === 'undefined') return;
+
+        // Only create once; renderCalendar() may call this repeatedly.
+        if (calendarResizeObserver) return;
+
+        calendarResizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.contentRect.width < 600) {
+                    calendarGrid.classList.add('compact-mode');
+                } else {
+                    calendarGrid.classList.remove('compact-mode');
+                }
+            }
+        });
+        calendarResizeObserver.observe(calendarCard);
+    }
+
+    // Initialize calendar (bind nav first so it still works even if render hits an error)
+    initCalendarNavigation();
+    calendarRender();
+    calendarRender();
 
     // ========== Risk Guard Overview ==========
     function renderRiskOverview() {

@@ -11,6 +11,7 @@
  * - 日期范围选择器（日历 + 快捷方式）
  * - 状态持久化（sessionStorage）
  * - 自定义事件触发 (accountChanged, dateRangeChanged)
+ * - 全局 Quick Journal 队列管理
  */
 
 // --- Topbar CSS Styles ---
@@ -349,6 +350,418 @@ const topbarStyles = `
         border-radius: 10px;
         margin-left: 6px;
     }
+
+    /* === Quick Journal Global Styles === */
+    .qj-indicator {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 6px;
+        color: var(--warning, #f59e0b);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        animation: qjPulse 2s infinite;
+    }
+    .qj-indicator:hover {
+        background: rgba(245, 158, 11, 0.15);
+        border-color: var(--warning, #f59e0b);
+    }
+    .qj-indicator.empty {
+        display: none;
+    }
+    @keyframes qjPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+        50% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); }
+    }
+    .qj-badge {
+        background: var(--warning, #f59e0b);
+        color: #000;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    /* Quick Journal Dropdown */
+    .qj-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: var(--bg-card, #1a1d24);
+        border: 1px solid var(--border, #334155);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        width: 380px;
+        z-index: 200;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .qj-dropdown.show { display: flex; }
+    
+    .qj-dropdown-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border, #334155);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .qj-dropdown-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-main, #e2e8f0);
+    }
+    .qj-dropdown-action {
+        font-size: 12px;
+        color: var(--primary, #3b82f6);
+        cursor: pointer;
+    }
+    .qj-dropdown-action:hover { text-decoration: underline; }
+    
+    .qj-list {
+        max-height: 320px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    .qj-list::-webkit-scrollbar { width: 4px; }
+    .qj-list::-webkit-scrollbar-thumb { background: var(--border, #334155); border-radius: 2px; }
+    
+    .qj-trade-item {
+        background: var(--bg-panel, #232730);
+        border: 1px solid var(--border, #334155);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+    }
+    .qj-trade-item:last-child { margin-bottom: 0; }
+    .qj-trade-item:hover { border-color: var(--primary, #3b82f6); }
+    
+    .qj-trade-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .qj-trade-info { display: flex; align-items: center; gap: 10px; }
+    .qj-trade-symbol { font-weight: 600; font-size: 14px; color: var(--text-main, #e2e8f0); }
+    .qj-trade-side { font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+    .qj-trade-side.long { background: rgba(16, 185, 129, 0.1); color: var(--success, #22c55e); }
+    .qj-trade-side.short { background: rgba(239, 68, 68, 0.1); color: var(--danger, #ef4444); }
+    .qj-trade-pnl { font-weight: 700; font-size: 14px; }
+    .qj-trade-pnl.win { color: var(--success, #22c55e); }
+    .qj-trade-pnl.loss { color: var(--danger, #ef4444); }
+    
+    .qj-trade-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-muted, #94a3b8);
+        margin-bottom: 10px;
+    }
+    .qj-trade-blueprint {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--primary, #3b82f6);
+    }
+    
+    .qj-quick-rate {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .qj-stars { display: flex; gap: 2px; }
+    .qj-star {
+        font-size: 18px;
+        color: var(--border, #334155);
+        cursor: pointer;
+        transition: color 0.1s;
+    }
+    .qj-star:hover, .qj-star.active { color: #fbbf24; }
+    
+    .qj-rate-btn {
+        padding: 4px 10px;
+        font-size: 11px;
+        background: var(--primary, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0.5;
+        pointer-events: none;
+        transition: all 0.2s;
+    }
+    .qj-rate-btn.enabled {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .qj-rate-btn.enabled:hover { background: #2563eb; }
+    
+    .qj-dropdown-footer {
+        padding: 12px 15px;
+        border-top: 1px solid var(--border, #334155);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0,0,0,0.2);
+    }
+    .qj-footer-hint {
+        font-size: 11px;
+        color: var(--text-muted, #94a3b8);
+    }
+    .qj-footer-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+        background: transparent;
+        border: 1px solid var(--border, #334155);
+        color: var(--text-muted, #94a3b8);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .qj-footer-btn:hover {
+        border-color: var(--text-main, #e2e8f0);
+        color: var(--text-main, #e2e8f0);
+    }
+
+    /* Quick Journal Toast (New Trade Notification) */
+    .qj-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--bg-card, #1a1d24);
+        border: 1px solid var(--primary, #3b82f6);
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        padding: 15px 20px;
+        z-index: 2000;
+        transform: translateY(150%);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 320px;
+        max-width: 400px;
+    }
+    .qj-toast.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .qj-toast-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .qj-toast-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-main, #e2e8f0);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .qj-toast-close {
+        color: var(--text-muted, #94a3b8);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+    }
+    .qj-toast-close:hover { color: var(--text-main, #e2e8f0); }
+    .qj-toast-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: var(--bg-panel, #232730);
+        border-radius: 6px;
+    }
+    .qj-toast-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .qj-toast-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+    .qj-toast-btn.primary {
+        background: var(--primary, #3b82f6);
+        color: white;
+    }
+    .qj-toast-btn.primary:hover { background: #2563eb; }
+    .qj-toast-btn.secondary {
+        background: transparent;
+        border: 1px solid var(--border, #334155);
+        color: var(--text-muted, #94a3b8);
+    }
+    .qj-toast-btn.secondary:hover {
+        border-color: var(--text-main, #e2e8f0);
+        color: var(--text-main, #e2e8f0);
+    }
+
+    /* Quick Journal Full Modal */
+    .qj-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        z-index: 3000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .qj-modal-overlay.show { display: flex; }
+    
+    .qj-modal-box {
+        background: var(--bg-card, #1a1d24);
+        border: 1px solid var(--border, #334155);
+        border-radius: 12px;
+        width: 420px;
+        max-width: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        animation: qjModalIn 0.3s ease-out;
+    }
+    @keyframes qjModalIn {
+        from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .qj-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border, #334155);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .qj-modal-title { font-size: 16px; font-weight: 600; color: var(--text-main, #e2e8f0); margin: 0; }
+    .qj-modal-close { cursor: pointer; color: var(--text-muted, #94a3b8); font-size: 20px; line-height: 1; }
+    .qj-modal-close:hover { color: var(--text-main, #e2e8f0); }
+    
+    .qj-modal-body { padding: 20px; }
+    
+    .qj-context-card {
+        background: var(--bg-panel, #232730);
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .qj-context-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .qj-context-blueprint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-muted, #94a3b8);
+        border-top: 1px solid rgba(255,255,255,0.05);
+        padding-top: 8px;
+    }
+    
+    .qj-form-group { margin-bottom: 20px; }
+    .qj-form-label {
+        font-size: 12px;
+        color: var(--text-muted, #94a3b8);
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .qj-modal-stars {
+        display: flex;
+        gap: 8px;
+    }
+    .qj-modal-star {
+        font-size: 28px;
+        color: var(--border, #334155);
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .qj-modal-star:hover { transform: scale(1.15); }
+    .qj-modal-star.active { color: #fbbf24; }
+    
+    .qj-options-grid {
+        display: grid;
+        gap: 8px;
+    }
+    .qj-options-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .qj-options-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    
+    .qj-option-btn {
+        padding: 10px 12px;
+        background: var(--bg-panel, #232730);
+        border: 1px solid var(--border, #334155);
+        border-radius: 6px;
+        color: var(--text-muted, #94a3b8);
+        font-size: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .qj-option-btn:hover {
+        border-color: var(--primary, #3b82f6);
+        color: var(--text-main, #e2e8f0);
+    }
+    .qj-option-btn.selected {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: var(--primary, #3b82f6);
+        color: var(--primary, #3b82f6);
+    }
+    
+    .qj-hint-text {
+        font-size: 11px;
+        color: var(--text-muted, #94a3b8);
+        text-align: center;
+        margin: 0;
+    }
+    
+    .qj-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--border, #334155);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .qj-modal-btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+    .qj-modal-btn.outline {
+        background: transparent;
+        border: 1px solid var(--border, #334155);
+        color: var(--text-muted, #94a3b8);
+    }
+    .qj-modal-btn.outline:hover {
+        border-color: var(--text-main, #e2e8f0);
+        color: var(--text-main, #e2e8f0);
+    }
+    .qj-modal-btn.primary {
+        background: var(--primary, #3b82f6);
+        color: white;
+    }
+    .qj-modal-btn.primary:hover { background: #2563eb; }
 `;
 
 // --- Date Picker State ---
@@ -369,6 +782,551 @@ let filtersState = {
     setup: [],          // 交易策略/Setup
     emotion: []         // 情绪标签
 };
+
+// --- Quick Journal Queue State ---
+let quickJournalQueue = [];
+let qjIdCounter = 1;
+
+/**
+ * 获取 Quick Journal 队列 (持久化)
+ */
+function getQuickJournalQueue() {
+    const stored = localStorage.getItem('toMoon_qj_queue');
+    if (stored) {
+        try {
+            const queue = JSON.parse(stored);
+            // 恢复时间对象
+            queue.forEach(item => {
+                item.closeTime = new Date(item.closeTime);
+            });
+            return queue;
+        } catch (e) { console.error('Failed to parse QJ queue', e); }
+    }
+    return [];
+}
+
+/**
+ * 保存 Quick Journal 队列
+ */
+function saveQuickJournalQueue(queue) {
+    localStorage.setItem('toMoon_qj_queue', JSON.stringify(queue));
+    quickJournalQueue = queue;
+}
+
+/**
+ * 添加交易到 Quick Journal 队列
+ * @param {object} trade - 交易数据
+ */
+function addTradeToQuickJournal(trade) {
+    const queue = getQuickJournalQueue();
+    const newTrade = {
+        id: `qj_${Date.now()}_${qjIdCounter++}`,
+        symbol: trade.symbol || 'Unknown',
+        side: trade.side || 'long',
+        pnl: trade.pnl || 0,
+        closeTime: new Date(),
+        account: trade.account || 'Main Account',
+        blueprint: trade.blueprint || null,
+        rating: null
+    };
+    queue.push(newTrade);
+    saveQuickJournalQueue(queue);
+    
+    // Update UI
+    updateQuickJournalIndicator();
+    
+    // Show toast notification
+    showQuickJournalToast(newTrade);
+    
+    // Dispatch event for other components
+    window.dispatchEvent(new CustomEvent('quickJournalAdded', { detail: newTrade }));
+    
+    return newTrade;
+}
+
+/**
+ * 从队列中移除交易
+ */
+function removeFromQuickJournal(tradeId) {
+    let queue = getQuickJournalQueue();
+    queue = queue.filter(t => t.id !== tradeId);
+    saveQuickJournalQueue(queue);
+    updateQuickJournalIndicator();
+    renderQuickJournalList();
+}
+
+/**
+ * 快速评分并移除
+ */
+function quickRateTrade(tradeId, rating) {
+    let queue = getQuickJournalQueue();
+    const trade = queue.find(t => t.id === tradeId);
+    if (trade) {
+        trade.rating = rating;
+        // In real app, save to backend here
+        console.log('Trade rated:', trade);
+        
+        // Remove from queue
+        queue = queue.filter(t => t.id !== tradeId);
+        saveQuickJournalQueue(queue);
+        updateQuickJournalIndicator();
+        renderQuickJournalList();
+        
+        // Show success feedback
+        showTopbarToast(`Trade rated ${rating}★`);
+    }
+}
+
+/**
+ * 延迟所有待处理交易（移至 TradeLog）
+ */
+function deferAllQuickJournals() {
+    const queue = getQuickJournalQueue();
+    if (queue.length > 0) {
+        // In real app, mark as pending in TradeLog
+        console.log('Deferred trades:', queue);
+        saveQuickJournalQueue([]);
+        updateQuickJournalIndicator();
+        closeQuickJournalDropdown();
+        showTopbarToast(`${queue.length} trade(s) moved to TradeLog`);
+    }
+}
+
+/**
+ * 更新 Quick Journal 指示器
+ */
+function updateQuickJournalIndicator() {
+    const indicator = document.getElementById('qj-indicator');
+    if (!indicator) return;
+    
+    const queue = getQuickJournalQueue();
+    const badge = indicator.querySelector('.qj-badge');
+    
+    if (queue.length > 0) {
+        indicator.classList.remove('empty');
+        if (badge) badge.textContent = queue.length;
+    } else {
+        indicator.classList.add('empty');
+    }
+}
+
+/**
+ * 渲染 Quick Journal 列表
+ */
+function renderQuickJournalList() {
+    const listEl = document.getElementById('qj-list');
+    if (!listEl) return;
+    
+    const queue = getQuickJournalQueue();
+    
+    if (queue.length === 0) {
+        listEl.innerHTML = `
+            <div style="text-align: center; padding: 30px 20px; color: var(--text-muted);">
+                <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">✓</div>
+                <div style="font-size: 13px;">All trades rated!</div>
+            </div>
+        `;
+        return;
+    }
+    
+    listEl.innerHTML = queue.map(trade => {
+        const pnlClass = trade.pnl >= 0 ? 'win' : 'loss';
+        const pnlSign = trade.pnl >= 0 ? '+' : '';
+        const sideClass = trade.side === 'long' ? 'long' : 'short';
+        const timeAgo = getTimeAgo(trade.closeTime);
+        const blueprintHTML = trade.blueprint 
+            ? `<div class="qj-trade-blueprint">📘 ${trade.blueprint}</div>` 
+            : '';
+        
+        return `
+            <div class="qj-trade-item" data-id="${trade.id}" onclick="openFullQuickJournalModal('${trade.id}')" style="cursor: pointer;">
+                <div class="qj-trade-header">
+                    <div class="qj-trade-info">
+                        <span class="qj-trade-symbol">${trade.symbol}</span>
+                        <span class="qj-trade-side ${sideClass}">${trade.side.toUpperCase()}</span>
+                    </div>
+                    <span class="qj-trade-pnl ${pnlClass}">${pnlSign}$${Math.abs(trade.pnl).toFixed(2)}</span>
+                </div>
+                <div class="qj-trade-meta">
+                    <span>${timeAgo} · ${trade.account}</span>
+                    ${blueprintHTML}
+                </div>
+                <div style="font-size: 11px; color: var(--primary); text-align: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    Click to rate with full details →
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Temporary rating storage
+let tempQJRatings = {};
+
+function setQJStarRating(tradeId, rating) {
+    tempQJRatings[tradeId] = rating;
+    
+    // Update star UI
+    const starsContainer = document.querySelector(`.qj-stars[data-trade-id="${tradeId}"]`);
+    if (starsContainer) {
+        starsContainer.querySelectorAll('.qj-star').forEach((star, idx) => {
+            star.classList.toggle('active', idx < rating);
+        });
+    }
+    
+    // Enable Done button
+    const btn = document.getElementById(`qj-rate-btn-${tradeId}`);
+    if (btn) btn.classList.add('enabled');
+}
+
+function confirmQJRating(tradeId) {
+    const rating = tempQJRatings[tradeId];
+    if (rating) {
+        quickRateTrade(tradeId, rating);
+        delete tempQJRatings[tradeId];
+    }
+}
+
+/**
+ * 显示 Quick Journal Toast 通知
+ */
+function showQuickJournalToast(trade) {
+    let toast = document.getElementById('qj-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'qj-toast';
+        toast.className = 'qj-toast';
+        document.body.appendChild(toast);
+    }
+    
+    const pnlClass = trade.pnl >= 0 ? 'win' : 'loss';
+    const pnlSign = trade.pnl >= 0 ? '+' : '';
+    const sideClass = trade.side === 'long' ? 'long' : 'short';
+    const blueprintHTML = trade.blueprint 
+        ? `<div style="font-size:11px; color:var(--primary); margin-top:5px;">📘 ${trade.blueprint}</div>` 
+        : '';
+    
+    toast.innerHTML = `
+        <div class="qj-toast-header">
+            <div class="qj-toast-title">
+                <span>⚡</span> Trade Closed
+            </div>
+            <span class="qj-toast-close" onclick="hideQuickJournalToast()">×</span>
+        </div>
+        <div class="qj-toast-body">
+            <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-weight:600; font-size:15px;">${trade.symbol}</span>
+                    <span class="qj-trade-side ${sideClass}">${trade.side.toUpperCase()}</span>
+                </div>
+                ${blueprintHTML}
+            </div>
+            <div class="qj-trade-pnl ${pnlClass}" style="font-size:18px;">${pnlSign}$${Math.abs(trade.pnl).toFixed(2)}</div>
+        </div>
+        <div class="qj-toast-actions">
+            <button class="qj-toast-btn secondary" onclick="hideQuickJournalToast()">Later</button>
+            <button class="qj-toast-btn primary" onclick="openQuickJournalFromToast('${trade.id}')">Rate Now</button>
+        </div>
+    `;
+    
+    // Show toast
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+    
+    // Auto-hide after 8 seconds
+    setTimeout(() => {
+        hideQuickJournalToast();
+    }, 8000);
+}
+
+function hideQuickJournalToast() {
+    const toast = document.getElementById('qj-toast');
+    if (toast) {
+        toast.classList.remove('show');
+    }
+}
+
+function openQuickJournalFromToast(tradeId) {
+    hideQuickJournalToast();
+    openFullQuickJournalModal(tradeId);
+}
+
+// === Full Quick Journal Modal ===
+let currentQJModalTradeId = null;
+let qjModalState = {
+    stars: 0,
+    deviation: null,
+    factor: null
+};
+
+/**
+ * 创建或获取 Quick Journal Modal DOM
+ */
+function ensureQJModalExists() {
+    let modal = document.getElementById('qj-full-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'qj-full-modal';
+        modal.className = 'qj-modal-overlay';
+        modal.innerHTML = `
+            <div class="qj-modal-box">
+                <div class="qj-modal-header">
+                    <h3 class="qj-modal-title">⚡ Quick Journal</h3>
+                    <span class="qj-modal-close" onclick="closeQJModal()">✕</span>
+                </div>
+                <div class="qj-modal-body">
+                    <!-- Trade Context -->
+                    <div class="qj-context-card">
+                        <div class="qj-context-top">
+                            <div>
+                                <span id="qj-modal-symbol" style="font-weight: 600;">NQ</span>
+                                <span id="qj-modal-side" class="qj-trade-side long" style="margin-left: 8px;">LONG</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <div id="qj-modal-pnl" style="font-size: 16px; font-weight: 700; color: var(--success);">+$120.00</div>
+                                <div id="qj-modal-time" style="font-size: 11px; color: var(--text-muted);">Just now</div>
+                            </div>
+                        </div>
+                        <div id="qj-modal-blueprint" class="qj-context-blueprint" style="display: none;">
+                            <span style="font-size: 14px;">📘</span>
+                            <span>Linked: <strong id="qj-modal-bp-name" style="color: var(--primary);">Strategy Name</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Q1: Execution Quality -->
+                    <div class="qj-form-group">
+                        <label class="qj-form-label">1. Execution Quality</label>
+                        <div class="qj-modal-stars" id="qj-modal-stars">
+                            <span class="qj-modal-star" data-rating="1" onclick="setQJModalStar(1)">★</span>
+                            <span class="qj-modal-star" data-rating="2" onclick="setQJModalStar(2)">★</span>
+                            <span class="qj-modal-star" data-rating="3" onclick="setQJModalStar(3)">★</span>
+                            <span class="qj-modal-star" data-rating="4" onclick="setQJModalStar(4)">★</span>
+                            <span class="qj-modal-star" data-rating="5" onclick="setQJModalStar(5)">★</span>
+                        </div>
+                    </div>
+
+                    <!-- Q2: Deviation -->
+                    <div class="qj-form-group">
+                        <label class="qj-form-label">2. Deviation?</label>
+                        <div class="qj-options-grid cols-4" id="qj-modal-deviation">
+                            <div class="qj-option-btn" onclick="selectQJDeviation('no')">No</div>
+                            <div class="qj-option-btn" onclick="selectQJDeviation('minor')">Minor</div>
+                            <div class="qj-option-btn" onclick="selectQJDeviation('major')">Major</div>
+                            <div class="qj-option-btn" onclick="selectQJDeviation('unsure')">Not Sure</div>
+                        </div>
+                    </div>
+
+                    <!-- Q3: Factor -->
+                    <div class="qj-form-group">
+                        <label class="qj-form-label">3. Factor</label>
+                        <div class="qj-options-grid cols-2" id="qj-modal-factor">
+                            <div class="qj-option-btn" onclick="selectQJFactor('discipline')">Discipline</div>
+                            <div class="qj-option-btn" onclick="selectQJFactor('emotion')">Emotion</div>
+                            <div class="qj-option-btn" onclick="selectQJFactor('noise')">Market Noise</div>
+                            <div class="qj-option-btn" onclick="selectQJFactor('execution')">Execution</div>
+                        </div>
+                    </div>
+
+                    <p class="qj-hint-text">⏱️ Takes ~10 seconds • Can be edited later in TradeLog</p>
+                </div>
+                <div class="qj-modal-footer">
+                    <button class="qj-modal-btn outline" onclick="saveQJLater()">Later</button>
+                    <button class="qj-modal-btn primary" onclick="saveQJModal()">Save</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Close on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeQJModal();
+        });
+    }
+    return modal;
+}
+
+/**
+ * 打开完整 Quick Journal Modal
+ */
+function openFullQuickJournalModal(tradeId) {
+    const queue = getQuickJournalQueue();
+    const trade = queue.find(t => t.id === tradeId);
+    if (!trade) return;
+    
+    currentQJModalTradeId = tradeId;
+    qjModalState = { stars: 0, deviation: null, factor: null };
+    
+    const modal = ensureQJModalExists();
+    
+    // Update trade context
+    document.getElementById('qj-modal-symbol').textContent = trade.symbol;
+    const sideEl = document.getElementById('qj-modal-side');
+    sideEl.textContent = trade.side.toUpperCase();
+    sideEl.className = `qj-trade-side ${trade.side}`;
+    
+    const pnlEl = document.getElementById('qj-modal-pnl');
+    const pnlSign = trade.pnl >= 0 ? '+' : '';
+    pnlEl.textContent = `${pnlSign}$${Math.abs(trade.pnl).toFixed(2)}`;
+    pnlEl.style.color = trade.pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+    
+    document.getElementById('qj-modal-time').textContent = getTimeAgo(trade.closeTime);
+    
+    // Blueprint info
+    const bpSection = document.getElementById('qj-modal-blueprint');
+    if (trade.blueprint) {
+        bpSection.style.display = 'flex';
+        document.getElementById('qj-modal-bp-name').textContent = trade.blueprint;
+    } else {
+        bpSection.style.display = 'none';
+    }
+    
+    // Reset UI
+    document.querySelectorAll('#qj-modal-stars .qj-modal-star').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('#qj-modal-deviation .qj-option-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('#qj-modal-factor .qj-option-btn').forEach(b => b.classList.remove('selected'));
+    
+    // Close dropdown
+    closeQuickJournalDropdown();
+    
+    // Show modal
+    modal.classList.add('show');
+}
+
+function closeQJModal() {
+    const modal = document.getElementById('qj-full-modal');
+    if (modal) modal.classList.remove('show');
+    currentQJModalTradeId = null;
+}
+
+function setQJModalStar(rating) {
+    qjModalState.stars = rating;
+    document.querySelectorAll('#qj-modal-stars .qj-modal-star').forEach((star, idx) => {
+        star.classList.toggle('active', idx < rating);
+    });
+}
+
+function selectQJDeviation(value) {
+    qjModalState.deviation = value;
+    document.querySelectorAll('#qj-modal-deviation .qj-option-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.textContent.toLowerCase().replace(' ', '') === value || 
+            (value === 'no' && btn.textContent === 'No') ||
+            (value === 'minor' && btn.textContent === 'Minor') ||
+            (value === 'major' && btn.textContent === 'Major') ||
+            (value === 'unsure' && btn.textContent === 'Not Sure'));
+    });
+}
+
+function selectQJFactor(value) {
+    qjModalState.factor = value;
+    document.querySelectorAll('#qj-modal-factor .qj-option-btn').forEach(btn => {
+        const btnText = btn.textContent.toLowerCase();
+        btn.classList.toggle('selected', 
+            (value === 'discipline' && btnText === 'discipline') ||
+            (value === 'emotion' && btnText === 'emotion') ||
+            (value === 'noise' && btnText === 'market noise') ||
+            (value === 'execution' && btnText === 'execution'));
+    });
+}
+
+function saveQJLater() {
+    closeQJModal();
+    showTopbarToast('Trade saved for later');
+}
+
+function saveQJModal() {
+    if (qjModalState.stars === 0) {
+        showTopbarToast('Please rate the execution quality');
+        return;
+    }
+    
+    // Save the rating
+    let queue = getQuickJournalQueue();
+    const trade = queue.find(t => t.id === currentQJModalTradeId);
+    if (trade) {
+        trade.rating = qjModalState.stars;
+        trade.deviation = qjModalState.deviation;
+        trade.factor = qjModalState.factor;
+        
+        // In real app, save to backend here
+        console.log('Trade fully rated:', trade);
+        
+        // Remove from queue
+        queue = queue.filter(t => t.id !== currentQJModalTradeId);
+        saveQuickJournalQueue(queue);
+        updateQuickJournalIndicator();
+        renderQuickJournalList();
+    }
+    
+    closeQJModal();
+    showTopbarToast(`Trade rated ${qjModalState.stars}★`);
+}
+
+/**
+ * 切换 Quick Journal 下拉菜单
+ */
+function toggleQuickJournalDropdown() {
+    const dropdown = document.getElementById('qj-dropdown');
+    if (!dropdown) return;
+    
+    const isShowing = dropdown.classList.contains('show');
+    
+    // Close other dropdowns
+    document.querySelectorAll('.dropdown-menu, .qj-dropdown').forEach(menu => {
+        menu.classList.remove('show');
+    });
+    
+    if (!isShowing) {
+        dropdown.classList.add('show');
+        renderQuickJournalList();
+    }
+}
+
+function closeQuickJournalDropdown() {
+    const dropdown = document.getElementById('qj-dropdown');
+    if (dropdown) dropdown.classList.remove('show');
+}
+
+/**
+ * 显示简易 Toast
+ */
+function showTopbarToast(msg) {
+    let toast = document.getElementById('topbar-simple-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'topbar-simple-toast';
+        toast.style.cssText = `
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card, #1a1d24); border: 1px solid var(--primary, #3b82f6);
+            padding: 12px 24px; border-radius: 8px; color: var(--text-main, #e2e8f0);
+            font-size: 13px; z-index: 2000; transition: transform 0.3s, opacity 0.3s; opacity: 0;
+        `;
+        document.body.appendChild(toast);
+    }
+    
+    toast.textContent = msg;
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        toast.style.opacity = '1';
+    });
+    
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(100px)';
+        toast.style.opacity = '0';
+    }, 3000);
+}
+
+/**
+ * 获取时间差描述
+ */
+function getTimeAgo(date) {
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+}
 
 // 筛选器配置
 const filterConfig = {
@@ -670,6 +1628,30 @@ function initTopbar(options = {}) {
                 </div>
             </div>`;
 
+    // Quick Journal Indicator HTML
+    const qjQueue = getQuickJournalQueue();
+    const qjEmptyClass = qjQueue.length === 0 ? 'empty' : '';
+    const quickJournalHTML = `
+            <div class="qj-indicator ${qjEmptyClass}" id="qj-indicator" onclick="toggleQuickJournalDropdown(); event.stopPropagation();">
+                <span>⚡</span>
+                <span>Pending</span>
+                <span class="qj-badge">${qjQueue.length}</span>
+                
+                <div class="qj-dropdown" id="qj-dropdown" onclick="event.stopPropagation()">
+                    <div class="qj-dropdown-header">
+                        <span class="qj-dropdown-title">📝 Unrated Trades</span>
+                        <span class="qj-dropdown-action" onclick="deferAllQuickJournals()">Defer All</span>
+                    </div>
+                    <div class="qj-list" id="qj-list">
+                        <!-- Trade items rendered by JS -->
+                    </div>
+                    <div class="qj-dropdown-footer">
+                        <span class="qj-footer-hint">Rate quickly or defer to TradeLog</span>
+                        <button class="qj-footer-btn" onclick="window.location.href='../Moonlog/Moonlog.html?view=tradelog'">Open TradeLog</button>
+                    </div>
+                </div>
+            </div>`;
+
     let topbarHTML = '';
     
     if (pageTitle) {
@@ -679,6 +1661,8 @@ function initTopbar(options = {}) {
                 <h2 id="topbar-page-title" style="margin:0; font-size: 18px; font-weight: 600; color: var(--text-main);">${pageTitle}</h2>
             </div>
             <div class="topbar-right">
+                ${quickJournalHTML}
+                <div class="filter-divider"></div>
                 ${accountFilterHTML}
                 <div class="filter-divider"></div>
                 ${dateFilterHTML}
@@ -695,6 +1679,8 @@ function initTopbar(options = {}) {
                 ${dateFilterHTML}
             </div>
             <div class="topbar-right">
+                ${quickJournalHTML}
+                <div class="filter-divider"></div>
                 ${filtersTriggerHTML}
             </div>
         `;
@@ -714,8 +1700,8 @@ function initTopbar(options = {}) {
     
     // 初始化点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.filter-group')) {
-            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (!e.target.closest('.filter-group') && !e.target.closest('.qj-indicator')) {
+            document.querySelectorAll('.dropdown-menu, .qj-dropdown').forEach(menu => {
                 menu.classList.remove('show');
             });
         }
@@ -1115,7 +2101,12 @@ if (typeof module !== 'undefined' && module.exports) {
         clearAllFilters,
         applyFilters,
         getFiltersState,
-        saveFiltersState
+        saveFiltersState,
+        // Quick Journal exports
+        addTradeToQuickJournal,
+        getQuickJournalQueue,
+        quickRateTrade,
+        deferAllQuickJournals
     };
 } else {
     // 浏览器环境全局暴露
@@ -1132,4 +2123,20 @@ if (typeof module !== 'undefined' && module.exports) {
     window.clearAllFilters = clearAllFilters;
     window.applyFilters = applyFilters;
     window.getFiltersState = getFiltersState;
+    // Quick Journal exports
+    window.addTradeToQuickJournal = addTradeToQuickJournal;
+    window.getQuickJournalQueue = getQuickJournalQueue;
+    window.quickRateTrade = quickRateTrade;
+    window.deferAllQuickJournals = deferAllQuickJournals;
+    window.toggleQuickJournalDropdown = toggleQuickJournalDropdown;
+    window.hideQuickJournalToast = hideQuickJournalToast;
+    window.openQuickJournalFromToast = openQuickJournalFromToast;
+    // Full QJ Modal exports
+    window.openFullQuickJournalModal = openFullQuickJournalModal;
+    window.closeQJModal = closeQJModal;
+    window.setQJModalStar = setQJModalStar;
+    window.selectQJDeviation = selectQJDeviation;
+    window.selectQJFactor = selectQJFactor;
+    window.saveQJLater = saveQJLater;
+    window.saveQJModal = saveQJModal;
 }

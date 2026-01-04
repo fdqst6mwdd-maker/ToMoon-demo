@@ -255,110 +255,90 @@
         </div>
     </div>
 
-    <!-- VIEW 1: DMI System (Existing) -->
+    <!-- VIEW 1: DMI System (Redesigned) -->
     <div id="view-dmi" class="view-section active">
-        <!-- Top Row: DMI Thermometer & State -->
-        <div class="dmi-grid">
-            
-            <!-- DMI Thermometer & Status -->
-            <div class="card" style="grid-column: span 2; display: flex; flex-direction: row; gap: 40px; align-items: center; padding: 30px;">
-                
-                <!-- Thermometer Visual -->
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
-                    <!-- Wrapper for Markers -->
-                    <div style="position: relative; width: 40px; height: 200px;">
-                        
-                        <!-- The Tube (Clipped) -->
-                        <div style="width: 100%; height: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--border); position: relative; overflow: hidden;">
-                            <!-- Zones Background -->
-                            <div style="position: absolute; inset: 0; background: linear-gradient(to top, 
-                                rgba(239, 68, 68, 0.2) 0%, 
-                                rgba(245, 158, 11, 0.2) 40%, 
-                                rgba(16, 185, 129, 0.2) 70%, 
-                                rgba(16, 185, 129, 0.4) 100%);"></div>
-                            
-                            <!-- Mercury Level -->
-                            <div id="dmi-mercury" style="position: absolute; bottom: 0; left: 0; right: 0; height: 82%; 
-                                        background: linear-gradient(to top, var(--primary) 0%, #60a5fa 100%); 
-                                        border-radius: 0;
-                                        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); transition: height 0.1s ease-out, background 0.1s;">
-                                <!-- Top Shine -->
-                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.8);"></div>
-                            </div>
-                        </div>
-
-                        <!-- Scale Markers -->
-                        <div style="position: absolute; right: -25px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: var(--text-muted); padding: 5px 0;">
-                            <span>100</span>
-                            <span>75</span>
-                            <span>50</span>
-                            <span>25</span>
-                            <span>0</span>
+        
+        <!-- DMI State Monitor (The Hero Section) -->
+        <div class="card" style="padding: 30px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Current State (Rolling 20 Trades)</div>
+                    <div style="display: flex; align-items: baseline; gap: 15px;">
+                        <h1 id="dmi-status-text" style="margin: 0; font-size: 48px; font-weight: 800; color: var(--success);">Strong</h1>
+                        <div id="dmi-trend-badge" style="padding: 4px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <span id="dmi-trend-icon">→</span> <span id="dmi-duration-text">Stable (12 trades)</span>
                         </div>
                     </div>
-                    <div id="dmi-score" style="font-weight: 700; font-size: 18px; color: var(--text-main);">82</div>
-                    <!-- Debug Slider -->
-                    <input type="range" min="0" max="100" value="82" oninput="updateDMI(this.value)" style="width: 60px; cursor: pointer; margin-top: 5px;" title="Drag to simulate DMI score">
+                    <p id="dmi-desc-text" style="margin: 10px 0 0 0; color: var(--text-muted); max-width: 600px;">
+                        Execution quality is high. You are following your plan consistently.
+                    </p>
+                </div>
+                
+                <!-- Debug Slider (For Demo) -->
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Simulate DMI Score</div>
+                    <input type="range" min="0" max="100" value="82" oninput="updateDMI(this.value)" style="width: 150px; cursor: pointer;">
+                    <div id="dmi-score-mini" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">82</div>
+                </div>
+            </div>
+
+            <!-- The Zone Spectrum (Visual Core) -->
+            <div style="position: relative; height: 60px; margin-top: 30px; margin-bottom: 10px;">
+                <!-- Background Zones -->
+                <div style="position: absolute; top: 20px; left: 0; right: 0; height: 12px; background: #333; border-radius: 6px; display: flex; overflow: hidden;">
+                    <div style="width: 45%; background: rgba(239, 68, 68, 0.3); border-right: 1px solid rgba(0,0,0,0.5);" title="Risky (<45)"></div>
+                    <div style="width: 15%; background: rgba(249, 115, 22, 0.3); border-right: 1px solid rgba(0,0,0,0.5);" title="Unstable (45-60)"></div>
+                    <div style="width: 15%; background: rgba(245, 158, 11, 0.3); border-right: 1px solid rgba(0,0,0,0.5);" title="Stable (60-75)"></div>
+                    <div style="width: 25%; background: rgba(16, 185, 129, 0.3);" title="Strong (>75)"></div>
                 </div>
 
-                <!-- Status Info -->
-                <div style="flex: 1;">
-                    <div class="header-row" style="margin-bottom: 10px;">
-                        <h3 style="margin:0; font-size: 20px;">Discipline Status</h3>
-                        <span id="dmi-badge" class="regime-badge regime-strong">🟢 Strong Discipline</span>
-                    </div>
-                    
-                    <p id="dmi-desc" style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
-                        Your trading discipline is currently in the <strong>Strong Zone</strong>. You are executing your strategy with high consistency and minimal emotional interference.
-                    </p>
+                <!-- Zone Labels -->
+                <div style="position: absolute; top: 40px; width: 100%; display: flex; font-size: 11px; color: var(--text-muted); font-weight: 600;">
+                    <div style="width: 45%; text-align: center; color: var(--danger);">RISKY</div>
+                    <div style="width: 15%; text-align: center; color: #f97316;">UNSTABLE</div>
+                    <div style="width: 15%; text-align: center; color: var(--warning);">STABLE</div>
+                    <div style="width: 25%; text-align: center; color: var(--success);">STRONG</div>
+                </div>
 
-                    <div style="display: flex; gap: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Data Sample</div>
-                            <div style="font-size: 16px; font-weight: 600;">50 Trades</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Trend</div>
-                            <div style="font-size: 16px; font-weight: 600; color: var(--success);">↗ Rising</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Consistency</div>
-                            <div style="font-size: 16px; font-weight: 600; color: var(--text-main);">94%</div>
-                        </div>
-                    </div>
+                <!-- The Marker (Current Position) -->
+                <div id="dmi-marker" style="position: absolute; top: 12px; left: 82%; transform: translateX(-50%); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                    <div style="width: 4px; height: 28px; background: white; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></div>
+                    <div id="dmi-marker-glow" style="position: absolute; top: -4px; left: -6px; width: 16px; height: 36px; background: var(--success); opacity: 0.3; filter: blur(4px); border-radius: 4px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Middle Row: Drivers & Context -->
+        <!-- Middle Row: Attribution & Context -->
         <div class="dmi-grid" style="grid-template-columns: 1fr 1fr;">
             
-            <!-- DMI Drivers (Attribution) -->
+            <!-- Behavioral Attribution (The 'Why') -->
             <div class="card">
                 <div class="header-row">
-                    <h3>Behavioral Impact on DMI</h3>
-                    <span style="font-size: 12px; color: var(--text-muted);">Score Impact</span>
+                    <h3>Behavioral Drivers</h3>
+                    <span style="font-size: 12px; color: var(--text-muted);">Recent Impact</span>
                 </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 0;">
+                    What specific actions are affecting your state?
+                </p>
                 
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Negative Contributors</div>
-                    <div class="driver-row">
-                        <div class="driver-name">⛔ Breakout: Low Plan Compliance</div>
-                        <div class="driver-impact text-red">-5</div>
-                    </div>
-                    <div class="driver-row">
-                        <div class="driver-name">⚠️ Reversal: Early Exit</div>
-                        <div class="driver-impact text-warning">-2</div>
-                    </div>
-
-                    <div style="font-size: 11px; color: var(--text-muted); margin: 15px 0 8px 0; text-transform: uppercase;">Positive Contributors</div>
-                    <div class="driver-row">
-                        <div class="driver-name">✅ Trend Following: High Efficiency</div>
-                        <div class="driver-impact text-green">+12</div>
-                    </div>
-                    <div class="driver-row">
-                        <div class="driver-name">✅ Risk Consistency</div>
-                        <div class="driver-impact text-green">+8</div>
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Dynamic Content based on state -->
+                    <div id="driver-container">
+                        <!-- Default Content -->
+                        <div class="driver-row">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                                <div class="driver-name">Plan Compliance (Entries)</div>
+                            </div>
+                            <div class="driver-impact text-green">High Consistency</div>
+                        </div>
+                        <div class="driver-row">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                                <div class="driver-name">Risk per Trade</div>
+                            </div>
+                            <div class="driver-impact text-green">Stable (1.0%)</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -366,26 +346,26 @@
             <!-- Market Context (Background Info) -->
             <div class="card">
                 <div class="header-row">
-                    <h3>Market Context Forecast</h3>
-                    <span style="font-size: 12px; color: var(--text-muted);">DMI Outlook</span>
+                    <h3>Market Context</h3>
+                    <span style="font-size: 12px; color: var(--text-muted);">Background Noise</span>
                 </div>
                 <p style="font-size: 13px; color: var(--text-muted); margin-top: 0;">
-                    How current market conditions might affect your future discipline.
+                    Is the market helping or hurting your psychology?
                 </p>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
                     <div class="context-metric">
-                        <span class="context-label">Active Strategy</span>
-                        <span class="context-val" style="font-size: 14px; color: var(--primary);">Trend Following</span>
+                        <span class="context-label">Win Rate (Last 20)</span>
+                        <span class="context-val" style="font-size: 14px; color: var(--text-muted);">45% <span style="font-size: 11px;">(Low)</span></span>
                     </div>
                     <div class="context-metric">
-                        <span class="context-label">Market Condition</span>
-                        <span class="context-val" style="font-size: 14px; color: var(--warning);">Volatile</span>
+                        <span class="context-label">Market Volatility</span>
+                        <span class="context-val" style="font-size: 14px; color: var(--warning);">High</span>
                     </div>
                 </div>
 
-                <div style="margin-top: 20px; padding: 10px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; font-size: 12px; color: var(--warning);">
-                    <strong>Forecast:</strong> Current volatility favors <strong>Trend Following</strong> but increases risk for <strong>Breakout</strong> setups. Maintain strict stop losses.
+                <div style="margin-top: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-left: 3px solid var(--text-muted); border-radius: 0 6px 6px 0; font-size: 12px; color: var(--text-muted);">
+                    <strong>Insight:</strong> Your Win Rate is low due to market chop, but your <strong>DMI is Strong</strong>. You are executing well despite poor results. <span style="color: var(--text-main); font-weight: 600;">Keep going.</span>
                 </div>
             </div>
         </div>
@@ -440,13 +420,15 @@
                 
                 <div style="display: flex; align-items: center; justify-content: center; height: 200px; gap: 30px;">
                     <!-- CSS Pie Chart Placeholder -->
-                    <div style="width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 45%, var(--danger) 45% 65%, var(--warning) 65% 85%, var(--success) 85% 100%);"></div>
+                    <div style="width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 30%, var(--success) 30% 50%, var(--warning) 50% 65%, var(--danger) 65% 80%, #8b5cf6 80% 90%, #64748b 90% 100%);"></div>
                     
-                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--primary); border-radius: 2px;"></span> Calm (45%)</div>
-                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--danger); border-radius: 2px;"></span> Fear (20%)</div>
-                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--warning); border-radius: 2px;"></span> Greed (20%)</div>
-                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--success); border-radius: 2px;"></span> Confident (15%)</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--primary); border-radius: 2px;"></span> Calm (30%)</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--success); border-radius: 2px;"></span> Confident (20%)</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--warning); border-radius: 2px;"></span> Anxious (15%)</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: var(--danger); border-radius: 2px;"></span> Frustrated (15%)</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: #8b5cf6; border-radius: 2px;"></span> Impatient (10%)</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; background: #64748b; border-radius: 2px;"></span> Fatigued (10%)</div>
                     </div>
                 </div>
             </div>
@@ -467,20 +449,20 @@
                     </div>
                     <div>
                         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
-                            <span>Fear</span>
-                            <span class="text-red">-$45 / trade</span>
+                            <span>Frustrated</span>
+                            <span class="text-red">-$85 / trade</span>
                         </div>
                         <div style="width: 100%; background: var(--bg-panel); height: 8px; border-radius: 4px;">
-                            <div style="width: 30%; background: var(--danger); height: 100%; border-radius: 4px;"></div>
+                            <div style="width: 55%; background: var(--danger); height: 100%; border-radius: 4px;"></div>
                         </div>
                     </div>
                     <div>
                         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
-                            <span>Greed</span>
-                            <span class="text-red">-$80 / trade</span>
+                            <span>Impatient</span>
+                            <span class="text-red">-$45 / trade</span>
                         </div>
                         <div style="width: 100%; background: var(--bg-panel); height: 8px; border-radius: 4px;">
-                            <div style="width: 50%; background: var(--danger); height: 100%; border-radius: 4px;"></div>
+                            <div style="width: 30%; background: #8b5cf6; height: 100%; border-radius: 4px;"></div>
                         </div>
                     </div>
                 </div>
@@ -517,29 +499,45 @@
                 <div class="hm-cell" style="background: #10b981;">0.72</div>
                 <div class="hm-cell" style="background: #34d399; color: #111;">0.65</div>
 
-                <!-- Row 2: Fear -->
-                <div class="hm-label">Fear</div>
-                <div class="hm-cell" style="background: #b91c1c;">0.35</div> <!-- Red -->
-                <div class="hm-cell" style="background: #991b1b;">0.42</div>
-                <div class="hm-cell" style="background: #7f1d1d;">0.25</div> <!-- Deep Red -->
-                <div class="hm-cell" style="background: #ef4444;">0.45</div>
-                <div class="hm-cell" style="background: #f87171; color: #111;">0.50</div>
-
-                <!-- Row 3: Greed -->
-                <div class="hm-label">Greed</div>
-                <div class="hm-cell" style="background: #d97706;">0.55</div> <!-- Orange -->
-                <div class="hm-cell" style="background: #b45309;">0.48</div>
-                <div class="hm-cell" style="background: #92400e;">0.40</div>
-                <div class="hm-cell" style="background: #f59e0b; color: #111;">0.58</div>
-                <div class="hm-cell" style="background: #fbbf24; color: #111;">0.60</div>
-
-                <!-- Row 4: Confident -->
+                <!-- Row 2: Confident -->
                 <div class="hm-label">Confident</div>
                 <div class="hm-cell" style="background: #064e3b;">0.95</div> <!-- Deep Green -->
                 <div class="hm-cell" style="background: #065f46;">0.88</div>
                 <div class="hm-cell" style="background: #047857;">0.82</div>
                 <div class="hm-cell" style="background: #059669;">0.75</div>
                 <div class="hm-cell" style="background: #ef4444;">0.40</div> <!-- Overconfidence trap -->
+
+                <!-- Row 3: Anxious -->
+                <div class="hm-label">Anxious</div>
+                <div class="hm-cell" style="background: #b45309;">0.48</div> <!-- Orange/Brown -->
+                <div class="hm-cell" style="background: #d97706;">0.52</div>
+                <div class="hm-cell" style="background: #f59e0b; color: #111;">0.58</div>
+                <div class="hm-cell" style="background: #fbbf24; color: #111;">0.60</div>
+                <div class="hm-cell" style="background: #fcd34d; color: #111;">0.62</div>
+
+                <!-- Row 4: Frustrated -->
+                <div class="hm-label">Frustrated</div>
+                <div class="hm-cell" style="background: #b91c1c;">0.35</div> <!-- Red -->
+                <div class="hm-cell" style="background: #991b1b;">0.42</div>
+                <div class="hm-cell" style="background: #7f1d1d;">0.25</div> <!-- Deep Red -->
+                <div class="hm-cell" style="background: #ef4444;">0.45</div>
+                <div class="hm-cell" style="background: #f87171; color: #111;">0.50</div>
+
+                <!-- Row 5: Impatient -->
+                <div class="hm-label">Impatient</div>
+                <div class="hm-cell" style="background: #7c3aed;">0.45</div> <!-- Purple -->
+                <div class="hm-cell" style="background: #8b5cf6;">0.50</div>
+                <div class="hm-cell" style="background: #a78bfa; color: #111;">0.55</div>
+                <div class="hm-cell" style="background: #c4b5fd; color: #111;">0.58</div>
+                <div class="hm-cell" style="background: #ddd6fe; color: #111;">0.60</div>
+
+                <!-- Row 6: Fatigued -->
+                <div class="hm-label">Fatigued</div>
+                <div class="hm-cell" style="background: #475569;">0.50</div> <!-- Slate -->
+                <div class="hm-cell" style="background: #64748b;">0.55</div>
+                <div class="hm-cell" style="background: #94a3b8; color: #111;">0.60</div>
+                <div class="hm-cell" style="background: #cbd5e1; color: #111;">0.62</div>
+                <div class="hm-cell" style="background: #e2e8f0; color: #111;">0.65</div>
             </div>
             
             <div style="margin-top: 20px; font-size: 13px; color: var(--text-muted); font-style: italic;">
@@ -554,7 +552,6 @@
             <div class="header-row">
                 <h3>AI Performance Reports</h3>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-outline">Export Report</button>
                     <button class="btn btn-primary">Generate New Report</button>
                 </div>
             </div>
@@ -562,27 +559,60 @@
                 Comprehensive analysis of your trading behavior, DMI trends, and performance metrics.
             </p>
 
-            <div class="report-list">
-                <div class="report-item" onclick="window.open('../ai_report/ai_report%20-%20combined.html', '_blank')" title="Click to view demo report">
-                    <div class="report-meta">
-                        <span class="report-name">Weekly Insight Report (Demo)</span>
-                        <span class="report-date">Dec 15, 2025 • 10:00 AM</span>
-                    </div>
-                    <span class="report-status">Ready</span>
+            <!-- System Reports Section -->
+            <div style="margin-bottom: 30px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">System Reports</h4>
+                    <span style="font-size: 11px; padding: 2px 8px; background: rgba(59, 130, 246, 0.1); color: var(--primary); border-radius: 10px;">Auto-Generated</span>
                 </div>
-                <div class="report-item">
-                    <div class="report-meta">
-                        <span class="report-name">Monthly Performance Review</span>
-                        <span class="report-date">Dec 01, 2025 • 09:30 AM</span>
+                
+                <div class="report-list">
+                    <div class="report-item" onclick="window.open('../ai_report/ai_report%20-%20combined.html', '_blank')" title="Click to view demo report">
+                        <div class="report-meta">
+                            <span class="report-name">Weekly Insight Report - 2025 W50 (Demo)</span>
+                            <span class="report-date">Dec 15, 2025 • 10:00 AM</span>
+                        </div>
+                        <span class="report-status">Ready</span>
                     </div>
-                    <span class="report-status">Ready</span>
+                    <div class="report-item">
+                        <div class="report-meta">
+                            <span class="report-name">Monthly Performance Review - Nov 2025</span>
+                            <span class="report-date">Dec 01, 2025 • 09:30 AM</span>
+                        </div>
+                        <span class="report-status">Ready</span>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-meta">
+                            <span class="report-name">Weekly Insight Report - 2025 W47</span>
+                            <span class="report-date">Nov 24, 2025 • 10:00 AM</span>
+                        </div>
+                        <span class="report-status">Ready</span>
+                    </div>
                 </div>
-                <div class="report-item">
-                    <div class="report-meta">
-                        <span class="report-name">Weekly Insight Report</span>
-                        <span class="report-date">Nov 24, 2025 • 10:00 AM</span>
+            </div>
+
+            <!-- Custom Reports Section -->
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">Custom Reports</h4>
+                    <span style="font-size: 11px; padding: 2px 8px; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 10px;">User-Generated</span>
+                </div>
+
+                <div class="report-list">
+                    <div class="report-item">
+                        <div class="report-meta">
+                            <span class="report-name">Custom Analysis: Recent Trading (3 Days)</span>
+                            <span class="report-date">Jan 02, 2026 • 14:20 PM</span>
+                        </div>
+                        <span class="report-status">Ready</span>
                     </div>
-                    <span class="report-status">Ready</span>
+                    <div class="report-item">
+                        <div class="report-meta">
+                            <span class="report-name">Strategy Review: Scalping Performance</span>
+                            <span class="report-date">Dec 28, 2025 • 11:15 AM</span>
+                        </div>
+                        <span class="report-status">Ready</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -625,42 +655,149 @@
         }
     }
 
-    // DMI Logic
+    // DMI Logic (Redesigned)
     function updateDMI(score) {
-        const mercury = document.getElementById('dmi-mercury');
-        const scoreText = document.getElementById('dmi-score');
-        const badge = document.getElementById('dmi-badge');
-        const desc = document.getElementById('dmi-desc');
+        // 1. Update Marker Position
+        const marker = document.getElementById('dmi-marker');
+        const markerGlow = document.getElementById('dmi-marker-glow');
+        const scoreMini = document.getElementById('dmi-score-mini');
         
-        // Update Height & Text
-        mercury.style.height = `${score}%`;
-        scoreText.textContent = score;
-
-        // 1. Dynamic Color Gradient (HSL)
-        // Map 0-100 score to 0-120 Hue (Red -> Green)
-        const hue = (score / 100) * 120;
-        const colorStart = `hsl(${hue}, 80%, 45%)`;
-        const colorEnd = `hsl(${hue}, 90%, 60%)`;
-        const shadowColor = `hsla(${hue}, 80%, 50%, 0.5)`;
-
-        // Apply Gradient
-        mercury.style.background = `linear-gradient(to top, ${colorStart} 0%, ${colorEnd} 100%)`;
-        mercury.style.boxShadow = `0 0 15px ${shadowColor}`;
-
-        // 2. Update Status Text & Badge
-        if (score >= 70) {
-            badge.className = 'regime-badge regime-strong';
-            badge.innerHTML = '🟢 Strong Discipline';
-            desc.innerHTML = 'Your trading discipline is currently in the <strong>Strong Zone</strong>. You are executing your strategy with high consistency.';
-        } else if (score >= 40) {
-            badge.className = 'regime-badge regime-stable';
-            badge.innerHTML = '🟠 Stable Discipline';
-            desc.innerHTML = 'Your trading discipline is in the <strong>Stable Zone</strong>. Be cautious of emotional triggers appearing in your recent trades.';
-        } else {
-            badge.className = 'regime-badge regime-risky';
-            badge.innerHTML = '🔴 Risky State';
-            desc.innerHTML = 'Your trading discipline has fallen into the <strong>Risky Zone</strong>. Immediate pause recommended to reset mental state.';
+        // Clamp score 0-100
+        score = Math.max(0, Math.min(100, score));
+        
+        if (marker) {
+            marker.style.left = score + '%';
         }
+        if (scoreMini) {
+            scoreMini.textContent = score;
+        }
+
+        // 2. Determine State & Update Hero Section
+        const statusText = document.getElementById('dmi-status-text');
+        const trendBadge = document.getElementById('dmi-trend-badge');
+        const trendIcon = document.getElementById('dmi-trend-icon');
+        const durationText = document.getElementById('dmi-duration-text');
+        const descText = document.getElementById('dmi-desc-text');
+        const driverContainer = document.getElementById('driver-container');
+
+        let stateConfig = {};
+
+        if (score > 75) {
+            // STRONG
+            stateConfig = {
+                text: 'Strong',
+                color: 'var(--success)',
+                trend: '→',
+                duration: 'Stable (12 trades)',
+                desc: 'Execution quality is high. You are following your plan consistently.',
+                drivers: `
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                            <div class="driver-name">Plan Compliance</div>
+                        </div>
+                        <div class="driver-impact text-green">High Consistency</div>
+                    </div>
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                            <div class="driver-name">Risk Management</div>
+                        </div>
+                        <div class="driver-impact text-green">Optimal</div>
+                    </div>
+                `
+            };
+        } else if (score >= 60) {
+            // STABLE
+            stateConfig = {
+                text: 'Stable',
+                color: 'var(--warning)', // Yellow/Gold
+                trend: '↘',
+                duration: 'Declining (3 trades)',
+                desc: 'Performance is acceptable, but recent trades show signs of hesitation.',
+                drivers: `
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--warning);"></span>
+                            <div class="driver-name">Hesitation</div>
+                        </div>
+                        <div class="driver-impact text-warning">Late Entries</div>
+                    </div>
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                            <div class="driver-name">Risk Management</div>
+                        </div>
+                        <div class="driver-impact text-green">Good</div>
+                    </div>
+                `
+            };
+        } else if (score >= 45) {
+            // UNSTABLE
+            stateConfig = {
+                text: 'Unstable',
+                color: '#f97316', // Orange
+                trend: '↘',
+                duration: 'Volatile (5 trades)',
+                desc: 'Warning: Emotional interference detected. You are deviating from your plan.',
+                drivers: `
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #f97316;"></span>
+                            <div class="driver-name">Overtrading</div>
+                        </div>
+                        <div class="driver-impact text-warning">High Frequency</div>
+                    </div>
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--danger);"></span>
+                            <div class="driver-name">Stop Loss</div>
+                        </div>
+                        <div class="driver-impact text-red">Widened 2x</div>
+                    </div>
+                `
+            };
+        } else {
+            // RISKY
+            stateConfig = {
+                text: 'Risky',
+                color: 'var(--danger)',
+                trend: '↓',
+                duration: 'Critical (2 trades)',
+                desc: 'CRITICAL: Stop trading immediately. High probability of tilt.',
+                drivers: `
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--danger);"></span>
+                            <div class="driver-name">Revenge Trading</div>
+                        </div>
+                        <div class="driver-impact text-red">Detected</div>
+                    </div>
+                    <div class="driver-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--danger);"></span>
+                            <div class="driver-name">Max Drawdown</div>
+                        </div>
+                        <div class="driver-impact text-red">Breached</div>
+                    </div>
+                `
+            };
+        }
+
+        // Apply Updates
+        if (statusText) {
+            statusText.textContent = stateConfig.text;
+            statusText.style.color = stateConfig.color;
+        }
+        
+        if (markerGlow) {
+            markerGlow.style.background = stateConfig.color;
+        }
+
+        if (trendIcon) trendIcon.textContent = stateConfig.trend;
+        if (durationText) durationText.textContent = stateConfig.duration;
+        if (descText) descText.textContent = stateConfig.desc;
+        if (driverContainer) driverContainer.innerHTML = stateConfig.drivers;
     }
 
     // Initialize DMI with demo value
