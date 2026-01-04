@@ -1738,6 +1738,15 @@ function simulateMultipleTrades() {
             else if (viewName === 'library') titleEl.innerText = 'Blueprint';
             else if (viewName === 'detail') titleEl.innerText = 'Blueprint Detail';
         }
+        
+        // Update Sidebar Active State
+        if (typeof updateSidebarActive === 'function') {
+            if (viewName === 'dashboard') {
+                updateSidebarActive('execute');
+            } else if (viewName === 'library') {
+                updateSidebarActive('blueprint');
+            }
+        }
     }
 
     // Session Toggle Logic

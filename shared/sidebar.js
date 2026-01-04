@@ -651,12 +651,19 @@ function detectCurrentSubItem() {
     const urlParams = new URLSearchParams(window.location.search);
     
     const view = urlParams.get('view');
+    // Strategy pages
     if (view === 'dashboard') return 'execute';
     if (view === 'library') return 'blueprint';
+    // Insight pages
     if (view === 'dmi') return 'dmi';
     if (view === 'performance') return 'performance';
     if (view === 'behavior') return 'behavior';
     if (view === 'ai-report') return 'ai-report';
+    // Moonlog pages
+    if (view === 'missioncontrol') return 'missioncontrol';
+    if (view === 'tradelog') return 'tradelog';
+    if (view === 'sessionlog') return 'sessionlog';
+    if (view === 'highlights') return 'highlights';
     
     const page = urlParams.get('page');
     if (page === 'tradeview') return 'tradeview';
@@ -673,19 +680,21 @@ function autoInitSidebar(options = {}) {
     let currentPage = 'dashboard';
     let currentSubItem = detectCurrentSubItem();
     
-    if (path.includes('dashboard')) {
+    if (path.includes('index') || path.endsWith('/')) {
         currentPage = 'dashboard';
     } else if (path.includes('strategy')) {
         currentPage = 'strategy';
         if (!currentSubItem) currentSubItem = 'execute';
-    } else if (path.includes('journal')) {
+    } else if (path.includes('moonlog') || path.includes('journal')) {
         currentPage = 'journal';
-        if (!currentSubItem) currentSubItem = 'tradeview';
+        if (!currentSubItem) currentSubItem = 'missioncontrol';
     } else if (path.includes('insight')) {
         currentPage = 'insight';
         if (!currentSubItem) currentSubItem = 'dmi';
     } else if (path.includes('settings')) {
         currentPage = 'settings';
+    } else if (path.includes('dashboard')) {
+        currentPage = 'dashboard';
     }
     
     initSidebar(currentPage, currentSubItem, options);
