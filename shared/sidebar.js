@@ -59,8 +59,8 @@ const sidebarConfig = {
             },
             items: [
                 { id: 'missioncontrol', label: 'Mission Control', href: '../Moonlog/Moonlog.html?view=missioncontrol' },
-                { id: 'tradelog', label: 'TradeLog', href: '../Moonlog/Moonlog.html?view=tradelog' },
-                { id: 'sessionlog', label: 'SessionLog', href: '../Moonlog/Moonlog.html?view=sessionlog' },
+                { id: 'tradelog', label: 'Trades', href: '../Moonlog/Moonlog.html?view=tradelog' },
+                { id: 'sessionlog', label: 'Sessions', href: '../Moonlog/Moonlog.html?view=sessionlog' },
                 { id: 'highlights', label: 'Highlights', href: '../Moonlog/Moonlog.html?view=highlights' }
             ]
         },
