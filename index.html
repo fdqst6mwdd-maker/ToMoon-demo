@@ -280,12 +280,16 @@
         }
         
         /* Column Spans */
-        .col-span-3 { grid-column: span 3; min-width: 0; } /* Allow natural sizing */
+        .col-span-3 { grid-column: span 3; min-width: 0; }
         .col-span-4 { grid-column: span 4; min-width: 0; }
         .col-span-6 { grid-column: span 6; min-width: 0; }
         .col-span-8 { grid-column: span 8; min-width: 0; }
         .col-span-9 { grid-column: span 9; min-width: 0; }
         .col-span-12 { grid-column: span 12; min-width: 0; }
+        
+        /* Row Spans */
+        .row-span-2 { grid-row: span 2; }
+        .row-span-3 { grid-row: span 3; }
 
         /* Internal Grids */
         .overview-grid { 
@@ -303,7 +307,7 @@
         .overview-grid[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
         .calendar-grid { 
             display: grid; 
-            grid-template-columns: repeat(7, minmax(40px, 1fr)) 90px; /* 7 days + weekly summary */
+            grid-template-columns: repeat(7, minmax(30px, 1fr)) 80px; /* Reduced width */
             gap: 4px; /* Reduced from 5px */
             margin-top: 12px;
             min-width: 0; /* Allow shrinking */
@@ -320,6 +324,9 @@
         /* Force weekly summary to always be in column 8 */
         .cal-day.weekly-summary {
             grid-column: 8;
+            background: rgba(255, 255, 255, 0.08); /* Highlighted background */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* More visible border */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
         /* Heatmap grid */
         .heatmap-mini {
@@ -533,44 +540,70 @@
         .cal-day { 
             background: var(--bg-panel); 
             border-radius: 6px; 
-            min-height: 45px; /* Reduced from 50px */
-            min-width: 40px; /* Reduced from 45px */
-            padding: 6px; /* Reduced from 8px */
+            min-height: 110px; 
+            padding: 8px;
             position: relative; 
             border: 1px solid transparent; 
-            transition: 0.2s;
-            box-sizing: border-box;
-        }
-        .cal-day:hover { border-color: var(--primary); }
-        .cal-day.weekly-summary {
-            background: rgba(59, 130, 246, 0.08);
-            border: 1px solid var(--primary);
-            min-width: 75px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+        .cal-day:hover { 
+            border-color: var(--primary); 
+            background: rgba(59, 130, 246, 0.03); /* Subtle hover bg */
+            transform: translateY(-2px); /* Slight lift */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .cal-day.weekly-summary {
+            background: rgba(59, 130, 246, 0.12); /* Increased opacity */
+            border: 1px solid rgba(59, 130, 246, 0.4); /* clearer border */
+            min-width: 75px;
+            /* Keep centered layout from base class */
         }
         .cal-day.weekly-summary:hover {
-            background: rgba(59, 130, 246, 0.12);
+            background: rgba(59, 130, 246, 0.2);
+            box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1);
         }
         .weekly-label {
-            font-size: 9px;
-            color: var(--text-muted);
+            font-size: 12px; /* Larger label */
+            color: var(--primary); /* Primary color */
+            font-weight: 800; /* Bolder */
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
         .weekly-value {
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 20px; /* Big value */
+            font-weight: 800;
+            line-height: 1.1;
         }
         .weekly-trades {
-            font-size: 9px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 5px;
+            font-weight: 500;
         }
-        .cal-date { font-size: 10px; color: var(--text-muted); display: block; margin-bottom: 2px; }
-        .cal-val { font-size: 11px; font-weight: 600; }
+        .cal-date { 
+            font-size: 12px; 
+            color: var(--text-muted); 
+            position: absolute; /* Fix to top-left corner */
+            top: 10px;
+            left: 10px;
+            font-weight: 500;
+        }
+        .cal-val { 
+            font-size: 16px; /* Larger font to fill space */
+            font-weight: 700; 
+            margin-bottom: 2px;
+        }
+        .cal-percent {
+            font-size: 11px !important;
+            font-weight: 500;
+            opacity: 0.9;
+        }
         .cal-dot { width: 4px; height: 4px; border-radius: 50%; position: absolute; bottom: 6px; right: 6px; }
         
         /* --- Tooltips with Info Icon --- */
@@ -1242,24 +1275,49 @@
             </div>
         </div>
 
-        <!-- DMI Summary -->
-        <div class="card col-span-3" id="card-dmi" style="cursor: pointer;" onclick="window.location.href='Insight/Insight_demo_v1.4-fix.html?view=dmi'">
+        <!-- 
+        LAYOUT ROW 2: Calendar (Left 8, spans 3 rows) | DMI, Risk Guard, Emotion (Right Stacked) 
+        -->
+
+        <!-- Calendar Module (Tall, Left Side) -->
+        <div class="card col-span-8 row-span-3" id="card-calendar">
+            <div class="card-header cal-header-row">
+                <h3 class="card-title">📅 Trading Calendar</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="cal-nav-btn" id="cal-prev-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </div>
+                    <span id="calendar-month-label" style="font-size: 14px; font-weight: 600; width: 140px; text-align: center;">December 2025</span>
+                    <div class="cal-nav-btn" id="cal-next-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                    <button class="card-close-btn" onclick="hideWidget('card-calendar')" style="margin-left: 10px;">×</button>
+                </div>
+            </div>
+            <div id="dashboard-calendar-grid" class="calendar-grid">
+                <!-- Grid content generated by JS -->
+            </div>
+            <div class="resize-handle" onmousedown="startResize(event)"></div>
+        </div>
+
+        <!-- DMI Summary (Right Top) -->
+        <div class="card col-span-4" id="card-dmi" style="cursor: pointer;" onclick="window.location.href='Insight/Insight_demo_v1.4-fix.html?view=dmi'">
             <button class="card-close-btn" onclick="event.stopPropagation(); hideWidget('card-dmi')">✕</button>
             <div class="resize-handle"></div>
             <div class="card-header">
-                <h3 class="card-title">DMI Insight</h3>
-                <span style="font-size: 18px;">🧠</span>
+                <h3 class="card-title">🧠 DMI Insight</h3>
+                <span style="font-size: 11px; color: var(--text-muted);">View →</span>
             </div>
             
             <!-- Mini Insight Thumbnail -->
-            <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                    <div style="font-size: 24px; font-weight: 800; color: var(--success);">Strong</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">Stable (12 trades)</div>
+                    <div style="font-size: 20px; font-weight: 800; color: var(--success);">Strong</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Stable (12 trades)</div>
                 </div>
 
                 <!-- Mini Zone Spectrum -->
-                <div style="position: relative; height: 8px; background: #333; border-radius: 4px; display: flex; overflow: hidden;">
+                <div style="position: relative; height: 6px; background: #333; border-radius: 3px; display: flex; overflow: hidden;">
                     <div style="width: 45%; background: rgba(239, 68, 68, 0.3);"></div>
                     <div style="width: 15%; background: rgba(249, 115, 22, 0.3);"></div>
                     <div style="width: 15%; background: rgba(245, 158, 11, 0.3);"></div>
@@ -1269,132 +1327,94 @@
                     <div style="position: absolute; top: -2px; bottom: -2px; left: 82%; width: 2px; background: white; box-shadow: 0 0 4px white;"></div>
                 </div>
                 
-                <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                <div style="font-size: 9px; color: var(--text-muted); display: flex; justify-content: space-between;">
                     <span>Risky</span>
                     <span>Strong</span>
                 </div>
             </div>
         </div>
 
-        <!-- Risk Guard Overview -->
-        <div class="card col-span-6" id="card-risk">
+        <!-- Risk Guard Overview (Right Middle) -->
+        <div class="card col-span-4" id="card-risk">
             <button class="card-close-btn" onclick="hideWidget('card-risk')">✕</button>
             <div class="resize-handle"></div>
             <div class="card-header">
-                <h3 class="card-title">🛡️ Risk Guard Overview</h3>
+                <h3 class="card-title">🛡️ Risk Guard</h3>
                 <button class="btn btn-outline btn-sm" onclick="window.location.href='../Strategy/Strategy_demo_v1.5.html'">Details →</button>
             </div>
             
-            <div class="risk-overview-grid" id="risk-overview-grid">
+            <div class="risk-overview-grid" id="risk-overview-grid" style="grid-template-columns: 1fr;">
                 <!-- Dynamically rendered by renderRiskOverview() -->
             </div>
         </div>
 
-        <!-- Journal Quick View -->
-        <div class="card col-span-3" id="card-journal">
-            <button class="card-close-btn" onclick="hideWidget('card-journal')">✕</button>
-            <div class="resize-handle"></div>
+        <!-- Emotion Lab Preview (Right Bottom) -->
+        <div class="card col-span-4" id="card-emotion">
             <div class="card-header">
-                <h3 class="card-title">Journal</h3>
-                <button class="btn btn-outline btn-sm" style="font-size: 10px;">+ Add</button>
-            </div>
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
-                <div class="journal-item">
-                    <span class="journal-time">10:45</span>
-                    <div>
-                        <div style="font-weight: 500;">NQ Long Scalp</div>
-                        <div style="color: var(--text-muted); font-size: 11px;">Followed plan, good exit.</div>
-                    </div>
-                </div>
-                <div class="journal-item">
-                    <span class="journal-time">09:30</span>
-                    <div>
-                        <div style="font-weight: 500;">ES Breakout</div>
-                        <div style="color: var(--text-muted); font-size: 11px;">Hesitated on entry, missed 5 pts.</div>
-                    </div>
-                </div>
-                <div style="margin-top: auto; padding-top: 10px; text-align: center;">
-                    <a href="#" style="font-size: 12px; color: var(--primary); text-decoration: none;">View all 5 entries →</a>
+                <h3 class="card-title">💭 Emotion Lab</h3>
+                <div class="card-actions">
+                    <button class="card-close-btn" onclick="hideWidget('card-emotion')">×</button>
                 </div>
             </div>
-        </div>
-
-        <!-- Calendar Module -->
-        <div class="card col-span-12" id="card-calendar">
-            <button class="card-close-btn" onclick="hideWidget('card-calendar')">✕</button>
-            <div class="resize-handle"></div>
-            <div class="card-header">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <h3 class="card-title" style="margin-right: 5px;">Trading Calendar</h3>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" class="cal-nav-btn" id="cal-prev-btn" title="Previous Month">&lt;</button>
-                        <span id="calendar-month-label" style="font-size: 13px; font-weight: 600; min-width: 120px; text-align: center;">December 2025</span>
-                        <button type="button" class="cal-nav-btn" id="cal-next-btn" title="Next Month">&gt;</button>
-                    </div>
-                </div>
-                <button class="btn btn-outline btn-sm">Full View</button>
-            </div>
-            <div class="card-content-scroll" style="overflow-x: auto;">
-                <div class="calendar-grid" id="dashboard-calendar-grid">
-                    <!-- Dynamic calendar content rendered by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Emotion Lab Preview -->
-        <div class="card col-span-6" id="card-emotion">
-            <button class="card-close-btn" onclick="hideWidget('card-emotion')">✕</button>
-            <div class="resize-handle"></div>
-            <div class="card-header">
-                <h3 class="card-title">Emotion Lab</h3>
-            </div>
-            <div style="display: flex; gap: 30px; align-items: center;">
+            <div style="display: flex; gap: 12px; align-items: center;">
                 <!-- CSS Pie Chart -->
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 30%, var(--success) 30% 50%, var(--warning) 50% 65%, var(--danger) 65% 80%, #8b5cf6 80% 90%, #64748b 90% 100%); flex-shrink: 0;"></div>
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 30%, var(--success) 30% 50%, var(--warning) 50% 65%, var(--danger) 65% 80%, #8b5cf6 80% 90%, #64748b 90% 100%); flex-shrink: 0;"></div>
                 
                 <div style="flex: 1;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Dominant Emotion: <span style="color: var(--primary);">Calm (30%)</span></h4>
-                    <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;">
-                        You are trading with a clear head today. Performance is 20% better when in "Calm" state compared to your monthly average.
+                    <h4 style="margin: 0 0 4px 0; font-size: 12px;">Dominant: <span style="color: var(--primary);">Calm (30%)</span></h4>
+                    <p style="font-size: 10px; color: var(--text-muted); margin: 0; line-height: 1.3;">
+                        Performance +20% when Calm.
                     </p>
                 </div>
             </div>
+            <div class="resize-handle" onmousedown="startResize(event)"></div>
         </div>
 
+        <!-- 
+        LAYOUT ROW 3: Heatmap (Full Width) 
+        -->
+
         <!-- Heatmap Preview -->
-        <div class="card col-span-6" id="card-heatmap">
-            <button class="card-close-btn" onclick="hideWidget('card-heatmap')">✕</button>
-            <div class="resize-handle"></div>
+        <div class="card col-span-12" id="card-heatmap">
             <div class="card-header">
-                <h3 class="card-title">Strategy Heatmap</h3>
-            </div>
-            <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 10px 0;">Win Rate by Strategy & Emotion</p>
-            
-            <div class="card-content-scroll">
-                <div class="heatmap-mini">
-                <!-- Row 1 -->
-                <div class="hm-cell" style="background: #065f46;"></div>
-                <div class="hm-cell" style="background: #10b981;"></div>
-                <div class="hm-cell" style="background: #34d399;"></div>
-                <div class="hm-cell" style="background: #065f46;"></div>
-                <div class="hm-cell" style="background: #ef4444;"></div>
-                <!-- Row 2 -->
-                <div class="hm-cell" style="background: #064e3b;"></div>
-                <div class="hm-cell" style="background: #059669;"></div>
-                <div class="hm-cell" style="background: #f59e0b;"></div>
-                <div class="hm-cell" style="background: #10b981;"></div>
-                <div class="hm-cell" style="background: #b91c1c;"></div>
-                <!-- Row 3 -->
-                <div class="hm-cell" style="background: #047857;"></div>
-                <div class="hm-cell" style="background: #34d399;"></div>
-                <div class="hm-cell" style="background: #fbbf24;"></div>
-                <div class="hm-cell" style="background: #059669;"></div>
-                <div class="hm-cell" style="background: #ef4444;"></div>
+                <h3 class="card-title">🔥 Strategy Heatmap</h3>
+                <div class="card-actions">
+                    <a href="Insight/Insight_demo_v1.4-fix.html?view=behavior" style="font-size: 11px; color: var(--primary); text-decoration: none; margin-right: 10px;">View Full Analysis →</a>
+                    <button class="card-close-btn" onclick="hideWidget('card-heatmap')">×</button>
                 </div>
             </div>
-            <div style="text-align: right; margin-top: 10px;">
-                <a href="#" style="font-size: 11px; color: var(--primary); text-decoration: none;">Full Analysis →</a>
+            <p style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted);">Win rate by hour of day (UTC)</p>
+            <div class="card-content-scroll" style="flex: 1;">
+                <div class="heatmap-mini" style="grid-template-columns: repeat(12, 1fr);">
+                    <!-- Row 1: Hours 0-11 -->
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.1);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.2);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.3);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.5);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.6);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.8);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.9);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.7);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.4);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.2);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.3);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.4);"></div>
+                    <!-- Row 2: Hours 12-23 -->
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.5);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.3);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.2);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.4);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.6);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.5);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.3);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.2);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.2);"></div>
+                    <div class="hm-cell" style="background: rgba(239, 68, 68, 0.1);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.1);"></div>
+                    <div class="hm-cell" style="background: rgba(16, 185, 129, 0.1);"></div>
+                </div>
             </div>
+            <div class="resize-handle" onmousedown="startResize(event)"></div>
         </div>
 
     </div>
@@ -2437,45 +2457,45 @@
     // Mock trading data for demonstration
     const tradingData = {
         '2025-12': {
-            1: { pnl: 450, trades: 3 },
-            2: { pnl: -120, trades: 2 },
-            3: { pnl: 890, trades: 4 },
-            5: { pnl: 210, trades: 2 },
-            8: { pnl: 320, trades: 1 },
-            9: { pnl: -150, trades: 2 },
-            10: { pnl: 550, trades: 3 },
-            12: { pnl: 120, trades: 1 },
-            15: { pnl: -200, trades: 2 },
-            16: { pnl: 400, trades: 2 },
-            17: { pnl: 150, trades: 1 },
-            18: { pnl: -50, trades: 1 },
-            19: { pnl: 300, trades: 2 },
-            22: { pnl: 100, trades: 1 },
-            24: { pnl: 250, trades: 2 },
-            26: { pnl: 180, trades: 1 },
-            29: { pnl: 220, trades: 2 },
-            30: { pnl: -80, trades: 1 }
+            1: { pnl: 450, trades: 3, wins: 3 },
+            2: { pnl: -120, trades: 2, wins: 0 },
+            3: { pnl: 890, trades: 4, wins: 4 },
+            5: { pnl: 210, trades: 2, wins: 1 },
+            8: { pnl: 320, trades: 1, wins: 1 },
+            9: { pnl: -150, trades: 2, wins: 0 },
+            10: { pnl: 550, trades: 3, wins: 2 },
+            12: { pnl: 120, trades: 1, wins: 1 },
+            15: { pnl: -200, trades: 2, wins: 0 },
+            16: { pnl: 400, trades: 2, wins: 2 },
+            17: { pnl: 150, trades: 1, wins: 1 },
+            18: { pnl: -50, trades: 1, wins: 0 },
+            19: { pnl: 300, trades: 2, wins: 2 },
+            22: { pnl: 100, trades: 1, wins: 1 },
+            24: { pnl: 250, trades: 2, wins: 2 },
+            26: { pnl: 180, trades: 1, wins: 1 },
+            29: { pnl: 220, trades: 2, wins: 2 },
+            30: { pnl: -80, trades: 1, wins: 0 }
         },
         '2025-11': {
-            3: { pnl: 280, trades: 2 },
-            4: { pnl: 320, trades: 2 },
-            5: { pnl: -100, trades: 1 },
-            6: { pnl: 450, trades: 3 },
-            7: { pnl: 180, trades: 1 },
-            10: { pnl: -80, trades: 1 },
-            11: { pnl: 200, trades: 2 },
-            12: { pnl: -50, trades: 1 },
-            13: { pnl: 380, trades: 2 },
-            14: { pnl: 220, trades: 2 },
-            17: { pnl: 350, trades: 3 },
-            18: { pnl: 150, trades: 1 },
-            19: { pnl: 280, trades: 2 },
-            20: { pnl: -120, trades: 1 },
-            21: { pnl: 190, trades: 1 },
-            24: { pnl: -60, trades: 1 },
-            25: { pnl: 500, trades: 3 },
-            26: { pnl: 180, trades: 2 },
-            28: { pnl: 240, trades: 2 }
+            3: { pnl: 280, trades: 2, wins: 2 },
+            4: { pnl: 320, trades: 2, wins: 2 },
+            5: { pnl: -100, trades: 1, wins: 0 },
+            6: { pnl: 450, trades: 3, wins: 3 },
+            7: { pnl: 180, trades: 1, wins: 1 },
+            10: { pnl: -80, trades: 1, wins: 0 },
+            11: { pnl: 200, trades: 2, wins: 2 },
+            12: { pnl: -50, trades: 1, wins: 0 },
+            13: { pnl: 380, trades: 2, wins: 2 },
+            14: { pnl: 220, trades: 2, wins: 2 },
+            17: { pnl: 350, trades: 3, wins: 3 },
+            18: { pnl: 150, trades: 1, wins: 1 },
+            19: { pnl: 280, trades: 2, wins: 2 },
+            20: { pnl: -120, trades: 1, wins: 0 },
+            21: { pnl: 190, trades: 1, wins: 1 },
+            24: { pnl: -60, trades: 1, wins: 0 },
+            25: { pnl: 500, trades: 3, wins: 3 },
+            26: { pnl: 180, trades: 2, wins: 2 },
+            28: { pnl: 240, trades: 2, wins: 2 }
         }
         // Note: January 2026 has no data yet - it's in the future
     };
@@ -2577,11 +2597,19 @@
                             valHtml = `<span class="cal-val" style="color:var(--text-muted)">${holiday}</span>`;
                         } else if (dayData) {
                             const pnl = dayData.pnl;
+                            // Calculate precise Win Rate: (Wins / Total Trades) * 100, rounded to integer
+                            const winRate = dayData.trades > 0 && dayData.wins !== undefined 
+                                ? Math.round((dayData.wins / dayData.trades) * 100) 
+                                : (dayData.percent || 0);
+                            
                             weekPnl += pnl;
                             weekTrades += dayData.trades;
                             const colorClass = pnl >= 0 ? 'text-green' : 'text-red';
                             const sign = pnl >= 0 ? '+' : '';
-                            valHtml = `<span class="cal-val ${colorClass}">${sign}$${Math.abs(pnl).toLocaleString()}</span>`;
+                            valHtml = `
+                                <span class="cal-val ${colorClass}" style="display:block;">${sign}$${Math.abs(pnl).toLocaleString()}</span>
+                                <span class="cal-percent ${colorClass}" style="display:block; font-size:9px; margin-top:2px;">${winRate}%</span>
+                            `;
                             dotColor = pnl >= 0 ? 'var(--success)' : 'var(--danger)';
                         } else if (!isWeekend) {
                             valHtml = `<span class="cal-val" style="color:var(--text-muted)">-</span>`;
