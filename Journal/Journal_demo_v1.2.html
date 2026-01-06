@@ -437,6 +437,93 @@
         }
         .journal-textarea:focus { border-color: var(--primary); }
 
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 1000px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px 15px;
+            }
+            
+            .journal-layout {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+            
+            .trade-list-panel {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            .header-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            .trade-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .emotion-chips {
+                gap: 6px;
+            }
+            
+            .emotion-chip {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
+            .prompt-container {
+                gap: 6px;
+            }
+            
+            .prompt-bubble {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .journal-textarea {
+                height: 120px;
+                padding: 12px;
+            }
+            
+            .slider-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+            
+            .emotion-chip {
+                flex: 1;
+                text-align: center;
+                min-width: calc(50% - 5px);
+            }
+        }
+
     </style>
 </head>
 <body>

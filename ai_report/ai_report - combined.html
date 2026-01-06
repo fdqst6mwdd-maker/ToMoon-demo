@@ -235,6 +235,78 @@
             .report-view { box-shadow: none; border: none; margin: 0; padding: 0; }
             body { background: #fff; }
         }
+
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 1000px) {
+            .report-view {
+                max-width: 100%;
+                margin: 15px;
+                padding: 30px 20px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-group button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .report-view {
+                margin: 10px;
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 20px !important;
+            }
+            
+            h2 {
+                font-size: 16px !important;
+            }
+            
+            h3 {
+                font-size: 14px !important;
+            }
+            
+            .data-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .data-item {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .report-view {
+                margin: 5px;
+                padding: 15px 10px;
+            }
+            
+            .control-panel {
+                padding: 10px;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>

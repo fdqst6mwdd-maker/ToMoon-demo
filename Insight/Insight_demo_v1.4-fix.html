@@ -207,6 +207,106 @@
         .report-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
         .report-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); color: var(--success); }
 
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 1000px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px 15px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .heatmap-container {
+                grid-template-columns: 80px repeat(5, 1fr);
+                gap: 3px;
+            }
+            
+            .header-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .kpi-card {
+                padding: 12px;
+            }
+            
+            .kpi-value {
+                font-size: 20px;
+            }
+            
+            .heatmap-container {
+                grid-template-columns: 60px repeat(5, 1fr);
+                font-size: 10px;
+            }
+            
+            .hm-cell {
+                height: 35px;
+                font-size: 10px;
+            }
+            
+            .hm-label {
+                font-size: 10px;
+            }
+            
+            .report-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .dmi-ring-container {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+            
+            .heatmap-container {
+                grid-template-columns: 50px repeat(5, 1fr);
+            }
+            
+            .hm-cell {
+                height: 30px;
+                font-size: 9px;
+            }
+        }
+
     </style>
 </head>
 <body>

@@ -312,6 +312,92 @@
             border-color: var(--border) transparent transparent transparent;
         }
 
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 1000px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px 15px;
+            }
+            
+            .settings-layout {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+            
+            .settings-nav {
+                position: static;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .settings-nav a {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .setting-control {
+                width: 100%;
+            }
+            
+            .setting-control select,
+            .setting-control input {
+                width: 100%;
+            }
+            
+            .account-card {
+                padding: 12px;
+            }
+            
+            .tooltip-text {
+                width: 200px;
+                left: auto;
+                right: 0;
+                transform: none;
+            }
+            
+            .info-tooltip:hover .tooltip-text {
+                transform: translateY(5px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            
+            .settings-nav {
+                flex-direction: column;
+            }
+            
+            .settings-nav a {
+                min-width: auto;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+        }
+
     </style>
 </head>
 <body>

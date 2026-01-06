@@ -252,6 +252,107 @@
         .link-select-check { color: var(--primary); font-size: 16px; opacity: 0; }
         .link-select-item.selected .link-select-check { opacity: 1; }
 
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 1000px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px 15px;
+            }
+            
+            .mission-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr) !important;
+            }
+            .cal-week-summary {
+                display: none;
+            }
+            
+            .header-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .cal-day {
+                min-height: 50px;
+                padding: 6px;
+            }
+            
+            .cal-date {
+                font-size: 10px;
+            }
+            
+            .cal-pnl {
+                font-size: 11px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .todo-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .cal-day {
+                min-height: 40px;
+                padding: 4px;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+        }
+
     </style>
 </head>
 <body>
