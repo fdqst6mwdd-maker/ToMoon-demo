@@ -450,6 +450,112 @@ const sidebarStyles = `
     .sidebar.expanded .sidebar-toggle svg {
         transform: rotate(0deg);
     }
+
+    /* ========== Mobile Sidebar Responsive ========== */
+    @media (max-width: 1000px) {
+        :root {
+            --sidebar-width: 0px !important;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px !important;
+            height: 100vh;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            padding: 20px;
+        }
+        
+        .sidebar.mobile-open {
+            transform: translateX(0);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+        }
+        
+        /* Always show expanded state on mobile when open */
+        .sidebar.mobile-open .brand-icon-img {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .sidebar.mobile-open .brand-logo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .sidebar.mobile-open .nav-label {
+            opacity: 1;
+        }
+        .sidebar.mobile-open .nav-sub-group {
+            height: auto;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Hide toggle on mobile - use hamburger instead */
+        .sidebar-toggle {
+            display: none;
+        }
+        
+        .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        
+        .sidebar.expanded ~ .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        
+        .edit-mode-banner {
+            left: 0 !important;
+        }
+        .sidebar.expanded ~ .edit-mode-banner {
+            left: 0 !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 85vw !important;
+            max-width: 300px;
+        }
+        
+        .brand {
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .brand-logo {
+            height: 120px;
+        }
+        
+        .nav-item {
+            padding: 10px 8px;
+            font-size: 14px;
+        }
+        
+        .nav-sub-item {
+            padding: 8px 12px 8px 20px;
+            font-size: 13px;
+        }
+    }
+
+    /* Mobile Overlay */
+    .mobile-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .mobile-sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
 `;
 
 /**

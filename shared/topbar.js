@@ -762,6 +762,214 @@ const topbarStyles = `
         color: white;
     }
     .qj-modal-btn.primary:hover { background: #2563eb; }
+
+    /* ========== Mobile Topbar Responsive ========== */
+    @media (max-width: 1000px) {
+        .topbar {
+            left: 0 !important;
+            height: 50px;
+            padding: 0 12px;
+        }
+        
+        .sidebar.expanded ~ .topbar {
+            left: 0 !important;
+        }
+        
+        .topbar-left {
+            gap: 10px;
+        }
+        
+        .topbar-right {
+            gap: 8px;
+        }
+        
+        /* Mobile hamburger button */
+        .mobile-menu-btn {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--bg-panel, #232730);
+            border: 1px solid var(--border, #334155);
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-main, #e2e8f0);
+            transition: all 0.2s;
+        }
+        .mobile-menu-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary, #3b82f6);
+        }
+        .mobile-menu-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .filter-group {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .filter-icon {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* Hide some elements on mobile */
+        .filter-divider {
+            display: none;
+        }
+        
+        .date-picker-dropdown {
+            min-width: auto;
+            width: calc(100vw - 24px);
+            max-width: 400px;
+            flex-direction: column;
+            left: 50%;
+            transform: translateX(-50%);
+            right: auto;
+        }
+        
+        .calendar-section {
+            border-right: none;
+            border-bottom: 1px solid var(--border, #334155);
+            padding: 12px;
+        }
+        
+        .shortcuts-section {
+            width: 100%;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 5px;
+        }
+        
+        .shortcut-btn {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            padding: 6px 8px;
+            font-size: 11px;
+        }
+        
+        .filters-dropdown {
+            width: calc(100vw - 24px);
+            max-width: 350px;
+            right: 0;
+            left: auto;
+        }
+        
+        /* Quick Journal dropdown */
+        .qj-dropdown {
+            width: calc(100vw - 24px);
+            max-width: 380px;
+            right: 0;
+        }
+        
+        /* Account dropdown */
+        .dropdown-menu {
+            min-width: 160px;
+            max-width: calc(100vw - 40px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .topbar {
+            padding: 0 10px;
+            gap: 8px;
+        }
+        
+        .topbar-left, .topbar-right {
+            gap: 6px;
+        }
+        
+        .filter-group {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 5px;
+        }
+        
+        .filter-icon {
+            width: 12px;
+            height: 12px;
+        }
+        
+        /* Stack date picker on small screens */
+        .date-picker-dropdown {
+            max-width: calc(100vw - 20px);
+        }
+        
+        .calendar-day {
+            height: 26px;
+            font-size: 11px;
+        }
+        
+        .calendar-weekdays {
+            font-size: 10px;
+        }
+        
+        /* Quick Journal toast */
+        .qj-toast {
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            min-width: auto;
+            max-width: none;
+        }
+        
+        /* QJ Modal */
+        .qj-modal-box {
+            width: calc(100vw - 40px);
+            max-height: 85vh;
+        }
+        
+        .qj-modal-header,
+        .qj-modal-body,
+        .qj-modal-footer {
+            padding: 12px 15px;
+        }
+        
+        .qj-modal-stars {
+            justify-content: center;
+        }
+        
+        .qj-options-grid.cols-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .topbar {
+            padding: 0 8px;
+        }
+        
+        .filter-group {
+            padding: 4px 6px;
+        }
+        
+        /* Hide text, show only icons on very small screens */
+        .filter-group .filter-text {
+            display: none;
+        }
+        
+        .date-picker-dropdown .calendar-section {
+            padding: 10px;
+        }
+        
+        .calendar-header {
+            font-size: 12px;
+        }
+        
+        .calendar-nav-btn {
+            padding: 3px 6px;
+        }
+    }
+
+    /* Mobile menu button - hidden by default */
+    .mobile-menu-btn {
+        display: none;
+    }
 `;
 
 // --- Date Picker State ---
@@ -1660,10 +1868,22 @@ function initTopbar(options = {}) {
 
     let topbarHTML = '';
     
+    // Mobile hamburger menu button HTML
+    const mobileMenuBtnHTML = `
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    `;
+    
     if (pageTitle) {
         // New Layout (Title Left, Filters Right)
         topbarHTML = `
             <div class="topbar-left">
+                ${mobileMenuBtnHTML}
                 <h2 id="topbar-page-title" style="margin:0; font-size: 18px; font-weight: 600; color: var(--text-main);">${pageTitle}</h2>
             </div>
             <div class="topbar-right">
@@ -1680,6 +1900,7 @@ function initTopbar(options = {}) {
         // Old Layout (Filters Left, Filters Right) - for Settings etc.
         topbarHTML = `
             <div class="topbar-left">
+                ${mobileMenuBtnHTML}
                 ${accountFilterHTML}
                 <div class="filter-divider"></div>
                 ${dateFilterHTML}
@@ -2150,4 +2371,86 @@ if (typeof module !== 'undefined' && module.exports) {
     window.selectQJFactor = selectQJFactor;
     window.saveQJLater = saveQJLater;
     window.saveQJModal = saveQJModal;
+    // Mobile sidebar toggle
+    window.toggleMobileSidebar = toggleMobileSidebar;
+    window.closeMobileSidebar = closeMobileSidebar;
 }
+
+/**
+ * Toggle mobile sidebar visibility
+ */
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    
+    const isOpen = sidebar.classList.contains('mobile-open');
+    
+    if (isOpen) {
+        closeMobileSidebar();
+    } else {
+        openMobileSidebar();
+    }
+}
+
+/**
+ * Open mobile sidebar
+ */
+function openMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    
+    sidebar.classList.add('mobile-open');
+    
+    // Create overlay if doesn't exist
+    let overlay = document.getElementById('mobile-sidebar-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'mobile-sidebar-overlay';
+        overlay.className = 'mobile-sidebar-overlay';
+        overlay.onclick = closeMobileSidebar;
+        document.body.appendChild(overlay);
+    }
+    
+    // Trigger reflow then add active class for animation
+    overlay.offsetHeight;
+    overlay.classList.add('active');
+    
+    // Prevent body scroll when sidebar is open
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Close mobile sidebar
+ */
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.remove('mobile-open');
+    }
+    
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+
+// Auto-close sidebar on window resize to desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 1000) {
+        closeMobileSidebar();
+    }
+});
+
+// Close sidebar when clicking on nav links (mobile)
+document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 1000) {
+        const navLink = e.target.closest('.nav-item, .nav-sub-item');
+        if (navLink && navLink.href) {
+            closeMobileSidebar();
+        }
+    }
+});
