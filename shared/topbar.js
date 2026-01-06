@@ -879,17 +879,17 @@ function quickRateTrade(tradeId, rating) {
 }
 
 /**
- * 延迟所有待处理交易（移至 Trades）
+ * 延迟所有待处理交易（移至 TradeLog）
  */
 function deferAllQuickJournals() {
     const queue = getQuickJournalQueue();
     if (queue.length > 0) {
-        // In real app, mark as pending in Trades
+        // In real app, mark as pending in TradeLog
         console.log('Deferred trades:', queue);
         saveQuickJournalQueue([]);
         updateQuickJournalIndicator();
         closeQuickJournalDropdown();
-        showTopbarToast(`${queue.length} trade(s) moved to Trades`);
+        showTopbarToast(`${queue.length} trade(s) moved to TradeLog`);
     }
 }
 
@@ -1128,7 +1128,7 @@ function ensureQJModalExists() {
                         </div>
                     </div>
 
-                    <p class="qj-hint-text">⏱️ Takes ~10 seconds • Can be edited later in Trades</p>
+                    <p class="qj-hint-text">⏱️ Takes ~10 seconds • Can be edited later in TradeLog</p>
                 </div>
                 <div class="qj-modal-footer">
                     <button class="qj-modal-btn outline" onclick="saveQJLater()">Later</button>
@@ -1652,8 +1652,8 @@ function initTopbar(options = {}) {
                         <!-- Trade items rendered by JS -->
                     </div>
                     <div class="qj-dropdown-footer">
-                        <span class="qj-footer-hint">Rate quickly or defer to Trades</span>
-                        <button class="qj-footer-btn" onclick="window.location.href='${basePath}/Moonlog/Moonlog.html?view=tradelog'">Open Trades</button>
+                        <span class="qj-footer-hint">Rate quickly or defer to TradeLog</span>
+                        <button class="qj-footer-btn" onclick="window.location.href='${basePath}/Moonlog/Moonlog.html?view=tradelog'">Open TradeLog</button>
                     </div>
                 </div>
             </div>`;
