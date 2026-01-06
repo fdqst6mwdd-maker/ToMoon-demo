@@ -766,7 +766,8 @@ const topbarStyles = `
 
 // --- Date Picker State ---
 let pickerState = {
-    currentDate: new Date(),
+    // Initialize with UTC date to match global standard
+    currentDate: new Date(new Date().toUTCString().substr(0, 25)), 
     startDate: null,
     endDate: null,
     initialized: false
@@ -1429,10 +1430,14 @@ function getTopbarState() {
         } catch (e) { console.error('Failed to parse topbar state', e); }
     }
     
-    // 默认状态
+    // 默认状态 (UTC)
     const end = new Date();
+    // Force UTC midnight for consistency
+    end.setUTCHours(23, 59, 59, 999);
+    
     const start = new Date();
-    start.setDate(end.getDate() - 29);
+    start.setUTCDate(end.getUTCDate() - 29);
+    start.setUTCHours(0, 0, 0, 0);
     
     return {
         accounts: ['Main Account', 'Trading Account A', 'Trading Account B'],
@@ -1527,6 +1532,7 @@ function initTopbar(options = {}) {
     injectTopbarStyles();
 
     const state = getTopbarState();
+    const basePath = options.basePath || '..';
     
     // 初始化日期选择器状态
     pickerState.startDate = state.dateRange.start;
@@ -1573,7 +1579,7 @@ function initTopbar(options = {}) {
                         <span>Trading Account B</span>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item manage-accounts" href="../Settings/Settings_demo_v1.2.html?section=accounts">
+                    <a class="dropdown-item manage-accounts" href="${basePath}/Settings/Settings_demo_v1.2.html?section=accounts">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                         <span>Manage Accounts</span>
                     </a>
@@ -1647,7 +1653,7 @@ function initTopbar(options = {}) {
                     </div>
                     <div class="qj-dropdown-footer">
                         <span class="qj-footer-hint">Rate quickly or defer to TradeLog</span>
-                        <button class="qj-footer-btn" onclick="window.location.href='../Moonlog/Moonlog.html?view=tradelog'">Open TradeLog</button>
+                        <button class="qj-footer-btn" onclick="window.location.href='${basePath}/Moonlog/Moonlog.html?view=tradelog'">Open TradeLog</button>
                     </div>
                 </div>
             </div>`;
@@ -1790,8 +1796,11 @@ function updateAccountDisplay() {
 function initDatePickerIfNeeded() {
     if (!pickerState.initialized) {
         const end = new Date();
+        end.setUTCHours(23, 59, 59, 999);
+        
         const start = new Date();
-        start.setDate(end.getDate() - 29);
+        start.setUTCDate(end.getUTCDate() - 29);
+        start.setUTCHours(0, 0, 0, 0);
         
         pickerState.startDate = start;
         pickerState.endDate = end;
@@ -1806,19 +1815,19 @@ function initDatePickerIfNeeded() {
 }
 
 function renderCalendar() {
-    const year = pickerState.currentDate.getFullYear();
-    const month = pickerState.currentDate.getMonth();
+    const year = pickerState.currentDate.getUTCFullYear();
+    const month = pickerState.currentDate.getUTCMonth();
     
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+    document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year} (UTC)`;
     
     const grid = document.getElementById('calendar-grid');
     grid.innerHTML = '';
     
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(Date.UTC(year, month, 1)).getUTCDay();
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
     
     for (let i = 0; i < firstDay; i++) {
         const cell = document.createElement('div');
@@ -1827,16 +1836,16 @@ function renderCalendar() {
     }
     
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
+        const date = new Date(Date.UTC(year, month, day));
         const cell = document.createElement('div');
         cell.className = 'calendar-day';
         cell.textContent = day;
         cell.onclick = () => handleDateClick(date);
         
         if (pickerState.startDate && pickerState.endDate) {
-            const dTime = date.setHours(0,0,0,0);
-            const sTime = new Date(pickerState.startDate).setHours(0,0,0,0);
-            const eTime = new Date(pickerState.endDate).setHours(0,0,0,0);
+            const dTime = date.getTime();
+            const sTime = new Date(pickerState.startDate).setUTCHours(0,0,0,0);
+            const eTime = new Date(pickerState.endDate).setUTCHours(0,0,0,0);
             
             if (dTime === sTime || dTime === eTime) {
                 cell.classList.add('selected');
@@ -1846,8 +1855,8 @@ function renderCalendar() {
                 cell.classList.add('in-range');
             }
         } else if (pickerState.startDate) {
-            const dTime = date.setHours(0,0,0,0);
-            const sTime = new Date(pickerState.startDate).setHours(0,0,0,0);
+            const dTime = date.getTime();
+            const sTime = new Date(pickerState.startDate).setUTCHours(0,0,0,0);
             if (dTime === sTime) cell.classList.add('selected');
         }
         
@@ -1856,12 +1865,12 @@ function renderCalendar() {
 }
 
 function changeMonth(delta) {
-    pickerState.currentDate.setMonth(pickerState.currentDate.getMonth() + delta);
+    pickerState.currentDate.setUTCMonth(pickerState.currentDate.getUTCMonth() + delta);
     renderCalendar();
 }
 
 function handleDateClick(date) {
-    date.setHours(0,0,0,0);
+    date.setUTCHours(0,0,0,0);
     
     if (!pickerState.startDate || (pickerState.startDate && pickerState.endDate)) {
         pickerState.startDate = date;
@@ -1888,38 +1897,39 @@ function selectShortcut(type) {
     const start = new Date();
     let label = '';
     
-    end.setHours(0,0,0,0);
-    start.setHours(0,0,0,0);
+    // Force UTC Midnight
+    end.setUTCHours(0,0,0,0);
+    start.setUTCHours(0,0,0,0);
     
     switch(type) {
         case 'today':
             label = 'Today';
             break;
         case 'yesterday':
-            start.setDate(end.getDate() - 1);
-            end.setDate(end.getDate() - 1);
+            start.setUTCDate(end.getUTCDate() - 1);
+            end.setUTCDate(end.getUTCDate() - 1);
             label = 'Yesterday';
             break;
         case 'last7':
-            start.setDate(end.getDate() - 6);
+            start.setUTCDate(end.getUTCDate() - 6);
             label = 'Last 7 Days';
             break;
         case 'last30':
-            start.setDate(end.getDate() - 29);
+            start.setUTCDate(end.getUTCDate() - 29);
             label = 'Last 30 Days';
             break;
         case 'thisMonth':
-            start.setDate(1);
+            start.setUTCDate(1);
             label = 'This Month';
             break;
         case 'lastMonth':
-            start.setMonth(start.getMonth() - 1);
-            start.setDate(1);
-            end.setDate(0);
+            start.setUTCMonth(start.getUTCMonth() - 1);
+            start.setUTCDate(1);
+            end.setUTCDate(0);
             label = 'Last Month';
             break;
         case 'thisYear':
-            start.setMonth(0, 1);
+            start.setUTCMonth(0, 1);
             label = 'This Year';
             break;
     }
@@ -1946,7 +1956,8 @@ function updateDateDisplay(label = null) {
     if (label) {
         display.textContent = label;
     } else {
-        const options = { month: 'short', day: 'numeric' };
+        // Use UTC for display formatting to match the logic
+        const options = { month: 'short', day: 'numeric', timeZone: 'UTC' };
         const sStr = pickerState.startDate.toLocaleDateString('en-US', options);
         const eStr = pickerState.endDate.toLocaleDateString('en-US', options);
         display.textContent = `${sStr} - ${eStr}`;

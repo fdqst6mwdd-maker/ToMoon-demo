@@ -165,6 +165,7 @@
             z-index: 1; /* Ensure content is below drawer but above background */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE and Edge */
+            margin-top: 60px; /* Space for fixed topbar */
         }
         .main-content::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
@@ -847,6 +848,207 @@
         .drawer-widget-name { font-size: 13px; font-weight: 600; }
         .drawer-widget-status { font-size: 11px; color: var(--text-muted); }
 
+        /* --- Empty State Styles --- */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            min-height: 120px;
+        }
+        .empty-state-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+        .empty-state-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .empty-state-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 280px;
+            margin-bottom: 16px;
+        }
+        .empty-state-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: 0.2s;
+            background: var(--primary);
+            color: white;
+        }
+        .empty-state-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .empty-state-btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .empty-state-btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Welcome Banner for New Users */
+        .welcome-banner {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 24px 30px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .welcome-banner-icon {
+            font-size: 48px;
+            flex-shrink: 0;
+        }
+        .welcome-banner-content {
+            flex: 1;
+        }
+        .welcome-banner-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .welcome-banner-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .welcome-banner-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .welcome-banner-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .welcome-banner-close:hover {
+            opacity: 1;
+        }
+
+        /* Onboarding Checklist */
+        .onboarding-checklist {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        @media (max-width: 1200px) {
+            .onboarding-checklist {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .onboarding-checklist {
+                grid-template-columns: 1fr;
+            }
+        }
+        .onboarding-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .onboarding-item:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        .onboarding-item.completed {
+            opacity: 0.6;
+        }
+        .onboarding-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .onboarding-item.completed .onboarding-check {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .onboarding-item:not(.completed):hover .onboarding-check {
+            border-color: var(--primary);
+        }
+        .onboarding-text {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .onboarding-item.completed .onboarding-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        .onboarding-arrow {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Empty Performance Grid */
+        .empty-kpi-box {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            border: 1px dashed var(--border);
+        }
+        .empty-kpi-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .empty-kpi-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Calendar Empty Day */
+        .cal-day.empty-day {
+            opacity: 0.5;
+        }
+
 
     </style>
 </head>
@@ -855,9 +1057,12 @@
 <!-- Sidebar (由共享模块生成) -->
 <aside class="sidebar" id="sidebar"></aside>
 <script src="shared/sidebar.js"></script>
+<script src="shared/topbar.js"></script>
 <script>
     // 初始化侧边栏 - Dashboard页面
     initSidebar('dashboard', null, { title: 'Dashboard', isRoot: true });
+    // 初始化顶部栏
+    initTopbar({ title: 'Dashboard', basePath: '.' });
 </script>
 
 <!-- Edit Mode Banner -->
@@ -932,17 +1137,74 @@
             <div class="drawer-widget-status" id="status-heatmap">Visible</div>
         </div>
     </div>
+    
+    <hr style="border: none; border-top: 1px solid var(--border); margin: 15px 0;">
+    
+    <div class="drawer-widget" onclick="toggleNewUserMode()" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
+        <span class="drawer-widget-icon">🧪</span>
+        <div class="drawer-widget-info">
+            <div class="drawer-widget-name">Toggle Empty State</div>
+            <div class="drawer-widget-status" id="status-empty-mode">Demo Mode</div>
+        </div>
+    </div>
 </div>
 
 <main class="main-content">
     
-    <div class="header-row">
-        <div>
+    <div class="header-row" id="header-row">
+        <div id="welcome-text">
             <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Welcome back, Eddie. Here is your trading overview.</p>
         </div>
         <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" style="border-color: var(--warning); color: var(--warning);" onclick="toggleNewUserMode()">🧪 Toggle Empty State</button>
             <button class="btn btn-outline" onclick="enterEditMode()">⚙ Customize</button>
-            <button class="btn btn-primary">+ New Trade</button>
+            <button class="btn btn-primary" onclick="window.location.href='Moonlog/Moonlog.html?view=tradelog'">+ New Trade</button>
+        </div>
+    </div>
+
+    <!-- Welcome Banner for New Users (hidden by default) -->
+    <div class="welcome-banner" id="welcome-banner" style="display: none; position: relative;">
+        <button class="welcome-banner-close" onclick="dismissWelcomeBanner()">✕</button>
+        <div class="welcome-banner-icon">🚀</div>
+        <div class="welcome-banner-content">
+            <div class="welcome-banner-title">Welcome to ToMoon!</div>
+            <div class="welcome-banner-desc">
+                Your trading journal is ready. Connect your broker account or import your first trades to unlock powerful insights and analytics.
+            </div>
+            <div class="welcome-banner-actions">
+                <button class="btn btn-primary" onclick="window.location.href='Settings/Settings_demo_v1.2.html?tab=accounts'">🔗 Connect Broker</button>
+                <button class="btn btn-outline" style="border: none; color: var(--text-muted);" onclick="loadDemoData()">View Demo Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Progress Card (hidden by default) -->
+    <div class="card" id="onboarding-card" style="display: none; margin-bottom: 20px;">
+        <div class="card-header">
+            <h3 class="card-title">🎯 Getting Started</h3>
+            <span id="onboarding-progress" style="font-size: 12px; color: var(--text-muted);">0/4 completed</span>
+        </div>
+        <div class="onboarding-checklist" id="onboarding-checklist">
+            <div class="onboarding-item" onclick="window.location.href='Settings/Settings_demo_v1.2.html?tab=accounts'">
+                <div class="onboarding-check">✓</div>
+                <span class="onboarding-text">Connect your trading account</span>
+                <span class="onboarding-arrow">→</span>
+            </div>
+            <div class="onboarding-item" onclick="window.location.href='Strategy/Strategy_demo_v1.5.html?view=library'">
+                <div class="onboarding-check">✓</div>
+                <span class="onboarding-text">Create your first strategy blueprint</span>
+                <span class="onboarding-arrow">→</span>
+            </div>
+            <div class="onboarding-item" onclick="window.location.href='Moonlog/Moonlog.html?view=tradelog'">
+                <div class="onboarding-check">✓</div>
+                <span class="onboarding-text">Log your first trade</span>
+                <span class="onboarding-arrow">→</span>
+            </div>
+            <div class="onboarding-item" onclick="window.location.href='Moonlog/Moonlog.html?view=sessionlog'">
+                <div class="onboarding-check">✓</div>
+                <span class="onboarding-text">Complete a trading session review</span>
+                <span class="onboarding-arrow">→</span>
+            </div>
         </div>
     </div>
 
@@ -1157,6 +1419,430 @@
 </div>
 
 <script>
+    // ========== Empty State / Demo Mode Configuration ==========
+    // Set to true to simulate new user experience with no data
+    // Set to false to show normal dashboard with mock data
+    let isNewUser = false; // Toggle this to test empty states
+    
+    // Onboarding progress (persisted in localStorage)
+    const onboardingSteps = {
+        'connect-account': false,
+        'create-blueprint': false,
+        'log-trade': false,
+        'session-review': false
+    };
+
+    // Load onboarding state from localStorage
+    function loadOnboardingState() {
+        const saved = localStorage.getItem('tomoon_onboarding');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            Object.assign(onboardingSteps, parsed);
+        }
+    }
+
+    // Save onboarding state
+    function saveOnboardingState() {
+        localStorage.setItem('tomoon_onboarding', JSON.stringify(onboardingSteps));
+    }
+
+    // Check if user has completed onboarding
+    function isOnboardingComplete() {
+        return Object.values(onboardingSteps).every(v => v);
+    }
+
+    // Mark step as complete
+    function completeOnboardingStep(step) {
+        onboardingSteps[step] = true;
+        saveOnboardingState();
+        updateOnboardingUI();
+    }
+
+    // Update onboarding UI
+    function updateOnboardingUI() {
+        const items = document.querySelectorAll('.onboarding-item');
+        const steps = ['connect-account', 'create-blueprint', 'log-trade', 'session-review'];
+        let completed = 0;
+        
+        items.forEach((item, i) => {
+            if (onboardingSteps[steps[i]]) {
+                item.classList.add('completed');
+                completed++;
+            } else {
+                item.classList.remove('completed');
+            }
+        });
+        
+        const progressEl = document.getElementById('onboarding-progress');
+        if (progressEl) {
+            progressEl.textContent = `${completed}/4 completed`;
+        }
+        
+        // Hide onboarding card if all complete
+        const card = document.getElementById('onboarding-card');
+        if (card && isOnboardingComplete()) {
+            card.style.display = 'none';
+        }
+    }
+
+    // Dismiss welcome banner
+    function dismissWelcomeBanner() {
+        const banner = document.getElementById('welcome-banner');
+        if (banner) {
+            banner.style.display = 'none';
+            localStorage.setItem('tomoon_welcome_dismissed', 'true');
+        }
+    }
+
+    // Load demo data (switch to normal view)
+    function loadDemoData() {
+        isNewUser = false;
+        localStorage.setItem('tomoon_demo_mode', 'false');
+        localStorage.removeItem('tomoon_welcome_dismissed'); // Reset welcome dismissal
+        initDashboardState();
+        dismissWelcomeBanner();
+    }
+
+    // Toggle new user mode (for testing)
+    function toggleNewUserMode() {
+        isNewUser = !isNewUser;
+        localStorage.setItem('tomoon_demo_mode', isNewUser ? 'true' : 'false');
+        
+        // Reset welcome banner dismissal when switching to new user mode
+        if (isNewUser) {
+            localStorage.removeItem('tomoon_welcome_dismissed');
+        }
+        
+        // Update status text in drawer
+        const statusEl = document.getElementById('status-empty-mode');
+        if (statusEl) {
+            statusEl.textContent = isNewUser ? 'Empty State Mode' : 'Demo Mode';
+        }
+        
+        initDashboardState();
+    }
+
+    // Initialize dashboard based on user state
+    function initDashboardState() {
+        const welcomeBanner = document.getElementById('welcome-banner');
+        const onboardingCard = document.getElementById('onboarding-card');
+        const welcomeText = document.getElementById('welcome-text');
+        
+        // Update drawer status
+        const statusEl = document.getElementById('status-empty-mode');
+        if (statusEl) {
+            statusEl.textContent = isNewUser ? 'Empty State Mode' : 'Demo Mode';
+        }
+        
+        if (isNewUser) {
+            // Show welcome banner if not dismissed
+            const dismissed = localStorage.getItem('tomoon_welcome_dismissed');
+            if (welcomeBanner && !dismissed) {
+                welcomeBanner.style.display = 'flex';
+            }
+            
+            // Show onboarding card if not complete
+            if (onboardingCard && !isOnboardingComplete()) {
+                onboardingCard.style.display = 'block';
+            }
+            
+            // Update welcome text
+            if (welcomeText) {
+                welcomeText.innerHTML = `<p style="margin: 0; font-size: 13px; color: var(--text-muted);">Welcome! Let's set up your trading journal.</p>`;
+            }
+            
+            // Render empty states for widgets
+            renderEmptyStates();
+        } else {
+            // Hide onboarding elements
+            if (welcomeBanner) welcomeBanner.style.display = 'none';
+            if (onboardingCard) onboardingCard.style.display = 'none';
+            
+            // Update welcome text
+            if (welcomeText) {
+                welcomeText.innerHTML = `<p style="margin: 0; font-size: 13px; color: var(--text-muted);">Welcome back, Eddie. Here is your trading overview.</p>`;
+            }
+            
+            // Render normal data
+            renderPerformanceMetrics();
+            renderRiskOverview();
+            calendarRender();
+            restoreDMI();
+            restoreJournal();
+            restoreEmotionLab();
+            restoreHeatmap();
+        }
+        
+        updateOnboardingUI();
+    }
+
+    // Render empty states for all widgets
+    function renderEmptyStates() {
+        renderEmptyPerformanceMetrics();
+        renderEmptyDMI();
+        renderEmptyRiskGuard();
+        renderEmptyJournal();
+        renderEmptyCalendar();
+        renderEmptyEmotionLab();
+        renderEmptyHeatmap();
+    }
+
+    // ========== Restore Functions (for switching back from empty state) ==========
+    function restoreDMI() {
+        const card = document.getElementById('card-dmi');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="flex-direction: column"]');
+        if (content) {
+            content.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div style="font-size: 24px; font-weight: 800; color: var(--success);">Strong</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Stable (12 trades)</div>
+                </div>
+                <div style="position: relative; height: 8px; background: #333; border-radius: 4px; display: flex; overflow: hidden;">
+                    <div style="width: 45%; background: rgba(239, 68, 68, 0.3);"></div>
+                    <div style="width: 15%; background: rgba(249, 115, 22, 0.3);"></div>
+                    <div style="width: 15%; background: rgba(245, 158, 11, 0.3);"></div>
+                    <div style="width: 25%; background: rgba(16, 185, 129, 0.3);"></div>
+                    <div style="position: absolute; top: -2px; bottom: -2px; left: 82%; width: 2px; background: white; box-shadow: 0 0 4px white;"></div>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                    <span>Risky</span>
+                    <span>Strong</span>
+                </div>
+            `;
+        }
+    }
+
+    function restoreJournal() {
+        const card = document.getElementById('card-journal');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="flex: 1"]');
+        if (content) {
+            content.innerHTML = `
+                <div class="journal-item">
+                    <span class="journal-time">10:45</span>
+                    <div>
+                        <div style="font-weight: 500;">NQ Long Scalp</div>
+                        <div style="color: var(--text-muted); font-size: 11px;">Followed plan, good exit.</div>
+                    </div>
+                </div>
+                <div class="journal-item">
+                    <span class="journal-time">09:30</span>
+                    <div>
+                        <div style="font-weight: 500;">ES Breakout</div>
+                        <div style="color: var(--text-muted); font-size: 11px;">Hesitated on entry, missed 5 pts.</div>
+                    </div>
+                </div>
+                <div style="margin-top: auto; padding-top: 10px; text-align: center;">
+                    <a href="Moonlog/Moonlog.html?view=sessionlog" style="font-size: 12px; color: var(--primary); text-decoration: none;">View all 5 entries →</a>
+                </div>
+            `;
+        }
+    }
+
+    function restoreEmotionLab() {
+        const card = document.getElementById('card-emotion');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="display: flex; gap: 30px"]');
+        if (content) {
+            content.innerHTML = `
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--primary) 0% 30%, var(--success) 30% 50%, var(--warning) 50% 65%, var(--danger) 65% 80%, #8b5cf6 80% 90%, #64748b 90% 100%); flex-shrink: 0;"></div>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Dominant Emotion: <span style="color: var(--primary);">Calm (30%)</span></h4>
+                    <p style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                        You are trading with a clear head today. Performance is 20% better when in "Calm" state compared to your monthly average.
+                    </p>
+                </div>
+            `;
+        }
+    }
+
+    function restoreHeatmap() {
+        const card = document.getElementById('card-heatmap');
+        if (!card) return;
+        
+        const desc = card.querySelector('p[style*="margin: 0 0 10px"]');
+        if (desc) desc.style.display = 'block';
+        
+        const scrollContent = card.querySelector('.card-content-scroll');
+        if (scrollContent) {
+            scrollContent.innerHTML = `
+                <div class="heatmap-mini">
+                    <div class="hm-cell" style="background: #065f46;"></div>
+                    <div class="hm-cell" style="background: #10b981;"></div>
+                    <div class="hm-cell" style="background: #34d399;"></div>
+                    <div class="hm-cell" style="background: #065f46;"></div>
+                    <div class="hm-cell" style="background: #ef4444;"></div>
+                    <div class="hm-cell" style="background: #064e3b;"></div>
+                    <div class="hm-cell" style="background: #059669;"></div>
+                    <div class="hm-cell" style="background: #f59e0b;"></div>
+                    <div class="hm-cell" style="background: #10b981;"></div>
+                    <div class="hm-cell" style="background: #b91c1c;"></div>
+                    <div class="hm-cell" style="background: #047857;"></div>
+                    <div class="hm-cell" style="background: #34d399;"></div>
+                    <div class="hm-cell" style="background: #fbbf24;"></div>
+                    <div class="hm-cell" style="background: #059669;"></div>
+                    <div class="hm-cell" style="background: #ef4444;"></div>
+                </div>
+            `;
+        }
+        
+        const viewLink = card.querySelector('div[style*="text-align: right"]');
+        if (viewLink) viewLink.style.display = 'block';
+    }
+
+    // Empty Performance Metrics
+    function renderEmptyPerformanceMetrics() {
+        const container = document.getElementById('performance-grid');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="empty-kpi-box">
+                <div class="empty-kpi-label">Net P&L</div>
+                <div class="empty-kpi-value">--</div>
+            </div>
+            <div class="empty-kpi-box">
+                <div class="empty-kpi-label">Win Rate</div>
+                <div class="empty-kpi-value">--</div>
+            </div>
+            <div class="empty-kpi-box">
+                <div class="empty-kpi-label">Profit Factor</div>
+                <div class="empty-kpi-value">--</div>
+            </div>
+            <div class="empty-kpi-box">
+                <div class="empty-kpi-label">Avg R:R</div>
+                <div class="empty-kpi-value">--</div>
+            </div>
+            <div class="empty-kpi-box">
+                <div class="empty-kpi-label">Balance</div>
+                <div class="empty-kpi-value">--</div>
+            </div>
+        `;
+        container.setAttribute('data-count', '5');
+    }
+
+    // Empty DMI
+    function renderEmptyDMI() {
+        const card = document.getElementById('card-dmi');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="flex-direction: column"]');
+        if (content) {
+            content.innerHTML = `
+                <div class="empty-state" style="padding: 15px 0;">
+                    <div style="font-size: 28px; opacity: 0.4; margin-bottom: 10px;">🧠</div>
+                    <div style="font-size: 13px; color: var(--text-muted); text-align: center;">
+                        Complete at least 10 trades to unlock DMI insights
+                    </div>
+                    <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+                        0/10 trades
+                    </div>
+                    <div style="width: 100%; height: 4px; background: var(--bg-panel); border-radius: 2px; margin-top: 8px; overflow: hidden;">
+                        <div style="width: 0%; height: 100%; background: var(--primary);"></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Empty Risk Guard
+    function renderEmptyRiskGuard() {
+        const grid = document.getElementById('risk-overview-grid');
+        if (!grid) return;
+        
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-state-icon">🛡️</div>
+                <div class="empty-state-title">No Risk Rules Set</div>
+                <div class="empty-state-desc">
+                    Connect a trading account and set up risk limits to monitor your daily and weekly exposure.
+                </div>
+                <button class="empty-state-btn" onclick="window.location.href='Settings/Settings_demo_v1.2.html?tab=accounts'">
+                    Connect Account
+                </button>
+            </div>
+        `;
+    }
+
+    // Empty Journal
+    function renderEmptyJournal() {
+        const card = document.getElementById('card-journal');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="flex: 1"]');
+        if (content) {
+            content.innerHTML = `
+                <div class="empty-state" style="flex: 1;">
+                    <div style="font-size: 32px; opacity: 0.4; margin-bottom: 8px;">📝</div>
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                        No journal entries yet
+                    </div>
+                    <button class="empty-state-btn-outline empty-state-btn" onclick="window.location.href='Moonlog/Moonlog.html?view=sessionlog'">
+                        Write First Entry
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // Empty Calendar (still shows structure but no P&L data)
+    function renderEmptyCalendar() {
+        // Calendar will render normally but with no trading data
+        // We'll modify calendarRender to handle empty state
+        calendarRender();
+    }
+
+    // Empty Emotion Lab
+    function renderEmptyEmotionLab() {
+        const card = document.getElementById('card-emotion');
+        if (!card) return;
+        
+        const content = card.querySelector('div[style*="display: flex; gap: 30px"]');
+        if (content) {
+            content.innerHTML = `
+                <div class="empty-state" style="width: 100%;">
+                    <div style="font-size: 32px; opacity: 0.4; margin-bottom: 8px;">💭</div>
+                    <div class="empty-state-title">Track Your Trading Emotions</div>
+                    <div class="empty-state-desc">
+                        Log how you feel during trades to discover emotional patterns that affect your performance.
+                    </div>
+                    <button class="empty-state-btn-outline empty-state-btn" onclick="window.location.href='Moonlog/Moonlog.html?view=tradelog'">
+                        Log a Trade
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // Empty Heatmap
+    function renderEmptyHeatmap() {
+        const card = document.getElementById('card-heatmap');
+        if (!card) return;
+        
+        const scrollContent = card.querySelector('.card-content-scroll');
+        const desc = card.querySelector('p[style*="margin: 0 0 10px"]');
+        
+        if (desc) desc.style.display = 'none';
+        
+        if (scrollContent) {
+            scrollContent.innerHTML = `
+                <div class="empty-state">
+                    <div style="font-size: 32px; opacity: 0.4; margin-bottom: 8px;">🔥</div>
+                    <div class="empty-state-title">Strategy Heatmap</div>
+                    <div class="empty-state-desc">
+                        See which strategies work best with different emotional states. Requires trade data.
+                    </div>
+                </div>
+            `;
+        }
+        
+        const viewLink = card.querySelector('div[style*="text-align: right"]');
+        if (viewLink) viewLink.style.display = 'none';
+    }
+
     // ========== Account Data Model ==========
     const accounts = {
         'acc1': { 
@@ -1745,8 +2431,7 @@
         selectedMetricIds = newOrder;
     }
 
-    // Init
-    renderPerformanceMetrics();
+    // Note: renderPerformanceMetrics() is called by initDashboardState()
 
     // ========== Calendar Logic ==========
     // Mock trading data for demonstration
@@ -1800,7 +2485,11 @@
         '2026-01-01': 'New Year'
     };
 
-    let currentCalendarDate = new Date(2025, 11, 1); // December 2025
+    // Global Timezone Configuration (UTC)
+    const APP_TIMEZONE = 'UTC';
+    
+    // Initialize with UTC date
+    let currentCalendarDate = new Date(Date.UTC(2025, 11, 1)); // December 2025 (UTC)
     let calendarResizeObserver = null;
 
     function calendarRender() {
@@ -1811,108 +2500,116 @@
             if (!grid) return;
             if (!label) return;
 
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
+            // Use UTC methods for consistent rendering across timezones
+            const year = currentCalendarDate.getUTCFullYear();
+            const month = currentCalendarDate.getUTCMonth();
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                                'July', 'August', 'September', 'October', 'November', 'December'];
             
-            label.textContent = `${monthNames[month]} ${year}`;
+            // Add UTC indicator to label
+            label.textContent = `${monthNames[month]} ${year} (UTC)`;
         
-            // Get first day of month and total days
-            const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const daysInPrevMonth = new Date(year, month, 0).getDate();
+            // Get first day of month and total days (UTC-based)
+            const firstDay = new Date(Date.UTC(year, month, 1)).getUTCDay(); // 0=Sun
+            const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+            const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
         
-        // Data key
-        const dataKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-        const monthData = tradingData[dataKey] || {};
+            // Data key - if isNewUser, use empty data
+            const dataKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+            const monthData = isNewUser ? {} : (tradingData[dataKey] || {});
         
-        let html = '';
+            let html = '';
         
-        // Header row
-        const headers = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Weekly'];
-        headers.forEach(h => {
-            html += `<div class="cal-header">${h}</div>`;
-        });
+            // Header row
+            const headers = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Weekly'];
+            headers.forEach(h => {
+                html += `<div class="cal-header">${h}</div>`;
+            });
         
-        // Calculate weeks
-        let currentDay = 1;
-        let weekNum = 1;
-        const today = new Date();
-        
-        // Fill calendar (max 6 weeks to cover any month)
-        for (let week = 0; week < 6; week++) {
-            // if (currentDay > daysInMonth) break; // Removed to ensure full grid rendering
+            // Calculate weeks
+            let currentDay = 1;
+            let weekNum = 1;
+            const today = new Date();
             
-            let weekPnl = 0;
-            let weekTrades = 0;
-            
-            // Days in week
-            for (let dow = 0; dow < 7; dow++) {
-                if (week === 0 && dow < firstDay) {
-                    // Previous month days
-                    const prevDay = daysInPrevMonth - (firstDay - dow - 1);
-                    const prevMonth = month === 0 ? 11 : month - 1;
-                    const prevYear = month === 0 ? year - 1 : year;
-                    const prevMonthName = monthNames[prevMonth].slice(0, 3);
-                    html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${prevDay} ${prevMonthName}</span></div>`;
-                } else if (currentDay > daysInMonth) {
-                    // Next month days
-                    const nextDay = currentDay - daysInMonth;
-                    const nextMonth = month === 11 ? 0 : month + 1;
-                    const nextMonthName = monthNames[nextMonth].slice(0, 3);
-                    html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${nextDay} ${nextMonthName}</span></div>`;
-                    currentDay++;
-                } else {
-                    // Current month days
-                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
-                    const isWeekend = dow === 0 || dow === 6;
-                    const isToday = year === today.getFullYear() && month === today.getMonth() && currentDay === today.getDate();
-                    const dayData = monthData[currentDay];
-                    const holiday = holidays[dateKey];
-                    
-                    let bgStyle = isWeekend ? 'background: rgba(255,255,255,0.02);' : '';
-                    let borderStyle = isToday ? 'border-color: var(--primary); background: rgba(59, 130, 246, 0.05);' : '';
-                    
-                    let valHtml = '';
-                    let dotColor = '';
-                    
-                    if (holiday) {
-                        valHtml = `<span class="cal-val" style="color:var(--text-muted)">${holiday}</span>`;
-                    } else if (dayData) {
-                        const pnl = dayData.pnl;
-                        weekPnl += pnl;
-                        weekTrades += dayData.trades;
-                        const colorClass = pnl >= 0 ? 'text-green' : 'text-red';
-                        const sign = pnl >= 0 ? '+' : '';
-                        valHtml = `<span class="cal-val ${colorClass}">${sign}$${Math.abs(pnl).toLocaleString()}</span>`;
-                        dotColor = pnl >= 0 ? 'var(--success)' : 'var(--danger)';
-                    } else if (!isWeekend) {
-                        valHtml = `<span class="cal-val" style="color:var(--text-muted)">-</span>`;
+            // Fill calendar (max 5 weeks as requested)
+            for (let week = 0; week < 5; week++) {
+                // if (currentDay > daysInMonth) break; // Removed to ensure full grid rendering
+                
+                let weekPnl = 0;
+                let weekTrades = 0;
+                
+                // Days in week
+                for (let dow = 0; dow < 7; dow++) {
+                    if (week === 0 && dow < firstDay) {
+                        // Previous month days
+                        const prevDay = daysInPrevMonth - (firstDay - dow - 1);
+                        const prevMonth = month === 0 ? 11 : month - 1;
+                        const prevYear = month === 0 ? year - 1 : year;
+                        const prevMonthName = monthNames[prevMonth].slice(0, 3);
+                        html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${prevDay} ${prevMonthName}</span></div>`;
+                    } else if (currentDay > daysInMonth) {
+                        // Next month days
+                        const nextDay = currentDay - daysInMonth;
+                        const nextMonth = month === 11 ? 0 : month + 1;
+                        const nextMonthName = monthNames[nextMonth].slice(0, 3);
+                        html += `<div class="cal-day" style="opacity: 0.3;"><span class="cal-date">${nextDay} ${nextMonthName}</span></div>`;
+                        currentDay++;
+                    } else {
+                        // Current month days
+                        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
+                        const isWeekend = dow === 0 || dow === 6;
+                        
+                        // UTC-based Today Check
+                        const isToday = year === today.getUTCFullYear() && 
+                                      month === today.getUTCMonth() && 
+                                      currentDay === today.getUTCDate();
+                                      
+                        const dayData = monthData[currentDay];
+                        const holiday = holidays[dateKey];
+                        
+                        let bgStyle = isWeekend ? 'background: rgba(255,255,255,0.02);' : '';
+                        let borderStyle = isToday ? 'border-color: var(--primary); background: rgba(59, 130, 246, 0.05);' : '';
+                        
+                        let valHtml = '';
+                        let dotColor = '';
+                        
+                        if (holiday) {
+                            valHtml = `<span class="cal-val" style="color:var(--text-muted)">${holiday}</span>`;
+                        } else if (dayData) {
+                            const pnl = dayData.pnl;
+                            weekPnl += pnl;
+                            weekTrades += dayData.trades;
+                            const colorClass = pnl >= 0 ? 'text-green' : 'text-red';
+                            const sign = pnl >= 0 ? '+' : '';
+                            valHtml = `<span class="cal-val ${colorClass}">${sign}$${Math.abs(pnl).toLocaleString()}</span>`;
+                            dotColor = pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+                        } else if (!isWeekend) {
+                            valHtml = `<span class="cal-val" style="color:var(--text-muted)">-</span>`;
+                        }
+                        
+                        const dayLabel = currentDay === 1 ? `${currentDay} ${monthNames[month].slice(0, 3)}` : currentDay;
+                        const dotHtml = dotColor ? `<div class="cal-dot-indicator" style="background-color: ${dotColor};"></div>` : '';
+                        
+                        // Add click navigation to Moonlog Trades
+                        html += `<div class="cal-day" style="${bgStyle}${borderStyle} cursor: pointer;" onclick="window.location.href='Moonlog/Moonlog.html?view=tradelog&date=${dateKey}'">
+                            <span class="cal-date">${dayLabel}</span>
+                            ${valHtml}
+                            ${dotHtml}
+                        </div>`;
+                        currentDay++;
                     }
-                    
-                    const dayLabel = currentDay === 1 ? `${currentDay} ${monthNames[month].slice(0, 3)}` : currentDay;
-                    const dotHtml = dotColor ? `<div class="cal-dot-indicator" style="background-color: ${dotColor};"></div>` : '';
-                    
-                    html += `<div class="cal-day" style="${bgStyle}${borderStyle}">
-                        <span class="cal-date">${dayLabel}</span>
-                        ${valHtml}
-                        ${dotHtml}
-                    </div>`;
-                    currentDay++;
                 }
+                
+                // Weekly summary
+                const weekColorClass = weekPnl >= 0 ? 'text-green' : 'text-red';
+                const weekSign = weekPnl >= 0 ? '+' : '';
+                html += `<div class="cal-day weekly-summary">
+                    <span class="weekly-label">Week ${weekNum}</span>
+                    <span class="weekly-value ${weekColorClass}">${weekSign}$${Math.abs(weekPnl).toLocaleString()}</span>
+                    <span class="weekly-trades">${weekTrades} trades</span>
+                </div>`;
+                weekNum++;
             }
-            
-            // Weekly summary
-            const weekColorClass = weekPnl >= 0 ? 'text-green' : 'text-red';
-            const weekSign = weekPnl >= 0 ? '+' : '';
-            html += `<div class="cal-day weekly-summary">
-                <span class="weekly-label">Week ${weekNum}</span>
-                <span class="weekly-value ${weekColorClass}">${weekSign}$${Math.abs(weekPnl).toLocaleString()}</span>
-                <span class="weekly-trades">${weekTrades} trades</span>
-            </div>`;
-            weekNum++;
-        }
         
             grid.innerHTML = html;
             
@@ -1925,9 +2622,9 @@
 
     function calendarChangeMonth(delta) {
         // Create a new date to avoid mutation issues
-        const newYear = currentCalendarDate.getFullYear();
-        const newMonth = currentCalendarDate.getMonth() + delta;
-        currentCalendarDate = new Date(newYear, newMonth, 1);
+        const newYear = currentCalendarDate.getUTCFullYear();
+        const newMonth = currentCalendarDate.getUTCMonth() + delta;
+        currentCalendarDate = new Date(Date.UTC(newYear, newMonth, 1));
         
         try {
             calendarRender();
@@ -1996,10 +2693,9 @@
         calendarResizeObserver.observe(calendarCard);
     }
 
-    // Initialize calendar (bind nav first so it still works even if render hits an error)
+    // Initialize calendar navigation (bind nav first so it still works even if render hits an error)
     initCalendarNavigation();
-    calendarRender();
-    calendarRender();
+    // Note: calendarRender() is now called by initDashboardState()
 
     // ========== Risk Guard Overview ==========
     function renderRiskOverview() {
@@ -2078,7 +2774,9 @@
     // ========== Account Filter Event Listener ==========
     function onAccountFilterChanged(accounts) {
         selectedAccounts = accounts;
-        renderRiskOverview();
+        if (!isNewUser) {
+            renderRiskOverview();
+        }
     }
 
     // Listen for topbar account changes
@@ -2088,8 +2786,34 @@
         }
     });
 
-    // Initialize Risk Overview
+    // Listen for date range changes
+    document.addEventListener('dateRangeChanged', function(e) {
+        if (e.detail && e.detail.start) {
+            // Sync calendar widget to selected start date
+            currentCalendarDate = new Date(e.detail.start);
+            // Ensure we are viewing the month of the start date
+            calendarRender();
+        }
+    });
+
+    // Listen for advanced filters changes
+    document.addEventListener('filtersChanged', function(e) {
+        console.log('Filters applied:', e.detail);
+        // In a full implementation, this would filter the data passed to widgets
+        // For this demo, we acknowledge the event
+    });
+
+    // Initialize Dashboard
     (function initDashboard() {
+        // Load onboarding state
+        loadOnboardingState();
+        
+        // Check if demo mode is saved
+        const savedDemoMode = localStorage.getItem('tomoon_demo_mode');
+        if (savedDemoMode === 'true') {
+            isNewUser = true;
+        }
+        
         // Check if topbar has already set accounts (from sessionStorage)
         const storedAccounts = sessionStorage.getItem('selectedAccounts');
         if (storedAccounts) {
@@ -2102,7 +2826,9 @@
                 console.log('Could not parse stored accounts');
             }
         }
-        renderRiskOverview();
+        
+        // Initialize based on user state
+        initDashboardState();
     })();
 
     // ========== Sync Data Function ==========

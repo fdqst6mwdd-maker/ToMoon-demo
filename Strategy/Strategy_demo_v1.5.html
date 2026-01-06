@@ -1455,6 +1455,11 @@ function simulateMultipleTrades() {
                 <div class="step-note">Used to identify and organize this strategy.</div>
                 
                 <div class="form-group">
+                    <label><span class="label-tooltip" data-tip="Give this Blueprint a unique name that helps you identify and remember it.">Blueprint Name</span></label>
+                    <input type="text" id="blueprint-name-input" class="form-input" placeholder="e.g. NQ Scalping Morning Session">
+                </div>
+
+                <div class="form-group">
                     <label><span class="label-tooltip" data-tip="Choose the primary markets or symbols this Blueprint trades. This is used for grouping and analytics.">Markets</span></label>
                     
                     <div class="market-selector-container" style="position: relative;">
@@ -1544,7 +1549,7 @@ function simulateMultipleTrades() {
                     <label><span class="label-tooltip" data-tip="A high-level description of how this strategy trades (timeframe + intent). Used to compare behavior vs. plan.">Trading Style</span></label>
                     <div class="toggle-group wrap">
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Ultra-short-term trades, aiming for small moves with high frequency.">Scalping</div>
-                        <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="Positions are opened and closed within the same trading day.">Day Trade</div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Positions are opened and closed within the same trading day.">Day Trade</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Trades held from intraday to a few days, targeting short-term price swings.">Short-Term Swing</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Multi-day trades based on broader market swings and structure.">Swing Trade</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Long-term positions held over extended periods, focused on major market trends.">Position Trade</div>
@@ -1553,7 +1558,7 @@ function simulateMultipleTrades() {
                 <div class="form-group">
                     <label><span class="label-tooltip" data-tip="Typical holding time for this strategy. Helps distinguish intraday vs. multi-day behavior.">Holding Duration</span></label>
                     <div class="toggle-group wrap">
-                        <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="Positions closed before session ends">Intraday Only</div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Positions closed before session ends">Intraday Only</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="May hold positions overnight">Overnight Possible</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Typically held for multiple days">Multi-Day Hold</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Holding duration depends on market conditions">Flexible Holding</div>
@@ -1588,7 +1593,7 @@ function simulateMultipleTrades() {
                 <div class="form-group">
                     <label><span class="label-tooltip" data-tip="How profitable trades are usually closed.">Profit Taking Method</span></label>
                     <div class="toggle-group wrap">
-                        <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="Take profit at a predefined price or R:R level.">Fixed Target</div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Take profit at a predefined price or R:R level.">Fixed Target</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Take profit based on market structure or key levels.">Structure Exit</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Exit the trade after a certain amount of time, regardless of price.">Time Exit</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This strategy does not use a fixed profit-taking method.">Not Specified</div>
@@ -1597,7 +1602,7 @@ function simulateMultipleTrades() {
                 <div class="form-group">
                     <label><span class="label-tooltip" data-tip="How risk is defined when the trade fails.">Stop Loss Method</span></label>
                     <div class="toggle-group wrap" id="stop-loss-method-toggle" data-field="stopLossMethod">
-                        <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="Stop loss is set at a predefined level.">Fixed Stop</div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Stop loss is set at a predefined level.">Fixed Stop</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Stop loss is placed beyond market structure.">Structure Stop</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Stop loss is based on market volatility (ATR).">ATR Stop</div>
                         <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Stop loss is managed trade by trade, without a fixed method.">Not Specified</div>
@@ -1621,21 +1626,21 @@ function simulateMultipleTrades() {
 
                 <div class="form-group">
                     <label><span class="label-tooltip" data-tip="Defines how risk is measured for each trade in this strategy.">Risk Unit Definition</span></label>
-                    <div class="toggle-group wrap">
-                        <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="Risk is measured as a fixed monetary amount per trade.">Fixed Amount ($) <span style="font-size:10px; opacity:0.7; margin-left:4px;">✓ Rec.</span></div>
-                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Risk is measured as a percentage of account equity.">Percentage (%)</div>
-                        <div class="toggle-opt" onclick="selectToggle(this)" data-hover="Risk is defined in points, ticks, or price distance.">Point / Tick</div>
+                    <div class="toggle-group wrap" id="risk-unit-toggle" data-field="riskUnit">
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-unit="usd" data-hover="Risk is measured as a fixed monetary amount per trade.">Fixed Amount ($) <span style="font-size:10px; opacity:0.7; margin-left:4px;">✓ Rec.</span></div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-unit="percent" data-hover="Risk is measured as a percentage of account equity.">Percentage (%)</div>
+                        <div class="toggle-opt" onclick="selectToggle(this)" data-unit="point" data-hover="Risk is defined in points, ticks, or price distance.">Point / Tick</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label><span class="label-tooltip" data-tip="Sets the maximum risk allowed for each individual trade.">Max Risk Per-Trade</span></label>
-                    <input type="text" placeholder="$ / % / ticks based on selection" class="form-input">
+                    <label><span class="label-tooltip" data-tip="Sets the maximum risk allowed for each individual trade.">Max Loss Per-Trade</span></label>
+                    <input type="number" id="max-risk-input" placeholder="Select Risk Unit first" class="form-input" disabled>
                 </div>
 
                 <div class="form-group">
-                    <label><span class="label-tooltip" data-tip="Defines the minimum risk-to-reward ratio expected for each trade.">Min Risk & Reward Ratio</span></label>
-                    <input type="text" placeholder="Optional (e.g. 1:1.5)" class="form-input">
+                    <label><span class="label-tooltip" data-tip="Defines the minimum risk-to-reward ratio expected for each trade. Enter as a decimal (e.g. 1.5 for 1:1.5).">Min Risk & Reward Ratio</span></label>
+                    <input type="number" id="min-rr-input" placeholder="e.g. 1.50" step="0.01" class="form-input">
                 </div>
 
                 <div class="form-group">
@@ -1659,18 +1664,18 @@ function simulateMultipleTrades() {
                     
                     <div class="form-group">
                         <label><span class="label-tooltip" data-tip="Closing a profitable trade earlier than the planned exit logic. Used to track consistency between planned exits and actual behavior.">Early Take Profit</span></label>
-                        <div class="toggle-group boundary-toggle auto-collapse">
+                        <div class="toggle-group boundary-toggle">
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed and will not be tracked as a deviation.">Yes</div>
-                            <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
+                            <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label><span class="label-tooltip" data-tip="Closing a trade before the planned stop loss level is reached. Helps identify fear-driven or discretionary exits.">Early Stop Loss</span></label>
-                        <div class="toggle-group boundary-toggle auto-collapse">
+                        <div class="toggle-group boundary-toggle">
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed and will not be tracked as a deviation.">Yes</div>
-                            <div class="toggle-opt selected" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
+                            <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
                         </div>
                     </div>
@@ -1682,10 +1687,10 @@ function simulateMultipleTrades() {
                     
                     <div class="form-group">
                         <label><span class="label-tooltip" data-tip="Increasing position size after the initial entry.">Add Position</span></label>
-                        <div class="toggle-group boundary-toggle auto-collapse">
+                        <div class="toggle-group boundary-toggle">
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed and will not be tracked as a deviation.">Yes</div>
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
-                            <div class="toggle-opt selected-red" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
+                            <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
                         </div>
                     </div>
                 </div>
@@ -1696,19 +1701,19 @@ function simulateMultipleTrades() {
                     
                     <div class="form-group">
                         <label><span class="label-tooltip" data-tip="Trade taken outside the logic of this Blueprint.">Non-Plan Trade</span></label>
-                        <div class="toggle-group boundary-toggle auto-collapse">
+                        <div class="toggle-group boundary-toggle">
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed and will not be tracked as a deviation.">Yes</div>
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
-                            <div class="toggle-opt selected-red" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
+                            <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label><span class="label-tooltip" data-tip="Trade is driven by emotion rather than planned decision-making.">Emotional Trade</span></label>
-                        <div class="toggle-group boundary-toggle auto-collapse">
+                        <div class="toggle-group boundary-toggle">
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed and will not be tracked as a deviation.">Yes</div>
                             <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is allowed but will be tracked for frequency and pattern analysis. Single occurrences are not treated as deviations.">Limited</div>
-                            <div class="toggle-opt selected-red" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
+                            <div class="toggle-opt" onclick="selectToggle(this)" data-hover="This behavior is not part of this Blueprint. Each occurrence will be recorded as a deviation.">No</div>
                         </div>
                     </div>
                 </div>
@@ -1941,6 +1946,29 @@ function simulateMultipleTrades() {
         document.getElementById('market-search').value = '';
         document.getElementById('market-list').classList.add('hidden');
         
+        // Reset Toggles
+        document.querySelectorAll('#wizard-modal .toggle-opt').forEach(opt => {
+            opt.classList.remove('selected');
+            opt.classList.remove('selected-red');
+        });
+        
+        // Reset Inputs
+        document.querySelectorAll('#wizard-modal input[type="text"], #wizard-modal input[type="number"]').forEach(input => {
+            if (input.id !== 'market-search') input.value = '';
+        });
+        
+        // Reset Max Risk Input State
+        const maxRiskInput = document.getElementById('max-risk-input');
+        if (maxRiskInput) {
+            maxRiskInput.disabled = true;
+            maxRiskInput.placeholder = "Select Risk Unit first";
+        }
+
+        // Reset Collapsed Groups
+        document.querySelectorAll('#wizard-modal .auto-collapse').forEach(group => {
+            group.classList.remove('collapsed');
+        });
+        
         initBlueprintWizardStateFromUI();
         updateWizardUI();
     }
@@ -1950,10 +1978,86 @@ function simulateMultipleTrades() {
     }
 
     function changeStep(direction) {
-        if (direction === 1 && currentStep === 1) {
-            if (selectedMarkets.length === 0) {
-                alert("Please select at least one market.");
-                return;
+        if (direction === 1) {
+            // Validation Logic
+            if (currentStep === 1) {
+                // Check Blueprint Name
+                const blueprintName = document.getElementById('blueprint-name-input').value.trim();
+                if (!blueprintName) {
+                    alert("Please enter a Blueprint Name.");
+                    return;
+                }
+                
+                if (selectedMarkets.length === 0) {
+                    alert("Please select at least one market.");
+                    return;
+                }
+                
+                const step1Toggles = document.querySelectorAll('#step-1 .toggle-group');
+                // Check Trading Style
+                if (!step1Toggles[0] || !step1Toggles[0].querySelector('.selected')) {
+                    alert("Please select a Trading Style.");
+                    return;
+                }
+                // Check Holding Duration
+                if (!step1Toggles[1] || !step1Toggles[1].querySelector('.selected')) {
+                    alert("Please select a Holding Duration.");
+                    return;
+                }
+            } else if (currentStep === 2) {
+                const step2Toggles = document.querySelectorAll('#step-2 .toggle-group');
+                // Check Strategy Type
+                if (!step2Toggles[0] || !step2Toggles[0].querySelector('.selected')) {
+                    alert("Please select a Strategy Type.");
+                    return;
+                }
+                // Check Profit Taking
+                if (!step2Toggles[1] || (!step2Toggles[1].querySelector('.selected') && !step2Toggles[1].querySelector('.selected-red'))) {
+                    alert("Please select a Profit Taking Method.");
+                    return;
+                }
+                // Check Stop Loss
+                if (!step2Toggles[2] || (!step2Toggles[2].querySelector('.selected') && !step2Toggles[2].querySelector('.selected-red'))) {
+                    alert("Please select a Stop Loss Method.");
+                    return;
+                }
+            } else if (currentStep === 3) {
+                // Check Risk Unit
+                if (!document.querySelector('#risk-unit-toggle .selected')) {
+                    alert("Please select a Risk Unit Definition.");
+                    return;
+                }
+                // Check Max Risk
+                const maxRisk = document.getElementById('max-risk-input').value;
+                if (!maxRisk) {
+                    alert("Please enter Max Loss Per-Trade.");
+                    return;
+                }
+                // Check Min RR
+                const minRR = document.getElementById('min-rr-input').value;
+                if (!minRR) {
+                    alert("Please enter Min Risk & Reward Ratio.");
+                    return;
+                }
+                // Check Risk Deviation
+                const step3Toggles = document.querySelectorAll('#step-3 .toggle-group');
+                // Risk Unit is index 0, Deviation is index 1
+                if (!step3Toggles[1] || (!step3Toggles[1].querySelector('.selected') && !step3Toggles[1].querySelector('.selected-red'))) {
+                    alert("Please select a Risk Deviation Tolerance.");
+                    return;
+                }
+            } else if (currentStep === 4) {
+                // Check all boundary groups
+                const boundaryGroups = document.querySelectorAll('#step-4 .boundary-group');
+                for (let group of boundaryGroups) {
+                    const toggles = group.querySelectorAll('.toggle-group');
+                    for (let toggle of toggles) {
+                        if (!toggle.querySelector('.selected') && !toggle.querySelector('.selected-red')) {
+                            alert("Please complete all Execution Boundaries selections.");
+                            return;
+                        }
+                    }
+                }
             }
         }
 
@@ -2050,7 +2154,9 @@ function simulateMultipleTrades() {
             opt.classList.remove('selected-red');
         });
         
-        if(el.innerText.includes('Strict') || el.innerText.includes('No')) {
+        // Only use red styling for specific options: "Not Specified" in Step 2 and "Strict (0%)" in Step 3
+        const text = el.innerText.trim();
+        if (text === 'Not Specified' || text === 'Strict (0%)') {
             el.classList.add('selected-red');
         } else {
             el.classList.add('selected');
@@ -2059,6 +2165,29 @@ function simulateMultipleTrades() {
         if (parent && parent.dataset && parent.dataset.field === 'stopLossMethod') {
             blueprintWizardState.stopLossMethod = el.innerText.trim();
             updateStep3StopLossHint();
+        }
+
+        // Handle Risk Unit Selection
+        if (parent && parent.dataset && parent.dataset.field === 'riskUnit') {
+            const unit = el.dataset.unit;
+            const input = document.getElementById('max-risk-input');
+            if (input) {
+                input.disabled = false;
+                input.value = ''; // Clear previous value
+                if (unit === 'usd') {
+                    input.placeholder = "$ (e.g. 100)";
+                    input.type = "number";
+                    input.step = "1";
+                } else if (unit === 'percent') {
+                    input.placeholder = "% (e.g. 1.5)";
+                    input.type = "number";
+                    input.step = "0.1";
+                } else if (unit === 'point') {
+                    input.placeholder = "Points/Ticks (e.g. 20)";
+                    input.type = "number";
+                    input.step = "1";
+                }
+            }
         }
         
         // Collapse if applicable
